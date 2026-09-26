@@ -37,8 +37,8 @@ The landing page is a convenience. Sign-out is still verified by its durable sig
 
 | Access | Email               | Password              |
 | ------ | ------------------- | --------------------- |
-| Agent  | `agent@example.com` | `dev-account-agent&1` |
-| Human  | `human@example.com` | `dev-account-human&1` |
+| Agent  | `agent@example.org` | `dev-account-agent&1` |
+| Human  | `human@example.org` | `dev-account-human&1` |
 
 Sign in with email and password on the AuthKit page. Add accounts in `packages/backend/src/confect/modules/developmentSeeder/domain/accounts.ts` once the app has roles; keep them idempotent, because setup reseeds on every run.
 

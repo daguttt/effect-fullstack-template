@@ -67,16 +67,17 @@ export function ExampleWorkflowPanel() {
             void form.handleSubmit();
           }}
         >
-          <form.AppField name="input">
-            {(field) => (
-              <field.InputField
-                label="Name to greet"
-                className="flex-1"
-                maxLength={EXAMPLE_INPUT_MAX_LENGTH}
-                required
-              />
-            )}
-          </form.AppField>
+          <div className="flex-1">
+            <form.AppField name="input">
+              {(field) => (
+                <field.InputField
+                  label="Name to greet"
+                  maxLength={EXAMPLE_INPUT_MAX_LENGTH}
+                  required
+                />
+              )}
+            </form.AppField>
+          </div>
           <form.Subscribe selector={(state) => state.isSubmitting}>
             {(isSubmitting) => (
               <Button type="submit" disabled={isSubmitting}>

@@ -40,7 +40,7 @@ pnpm setup:worktree     # Convex deployment + WorkOS env + seed; prints the app 
 pnpm dev                # or `pnpm dev:agent` for streamed logs
 ```
 
-Sign in as `agent@example.com` / `dev-account-agent&1` or `human@example.com` / `dev-account-human&1`. Before removing a worktree, run `pnpm teardown:worktree --yes`. The full lifecycle is in [`docs/agents/linked-git-worktree.md`](docs/agents/linked-git-worktree.md).
+Sign in as `agent@example.org` / `dev-account-agent&1` or `human@example.org` / `dev-account-human&1`. Before removing a worktree, run `pnpm teardown:worktree --yes`. The full lifecycle is in [`docs/agents/linked-git-worktree.md`](docs/agents/linked-git-worktree.md).
 
 Then make it yours:
 

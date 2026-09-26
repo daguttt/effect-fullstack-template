@@ -1,0 +1,111 @@
+name: Renew open PR previews
+
+on:
+  schedule:
+    - cron: '23 8 * * *'
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      PR_PREVIEW_CONVEX_ACCESS_TOKEN:
+        required: true
+
+permissions:
+  pull-requests: write
+
+concurrency:
+  group: isolated-pr-preview-keepalive
+  cancel-in-progress: false
+
+jobs:
+  renew:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Renew existing deployments for open labeled PRs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONVEX_TOKEN: ${{ secrets.PR_PREVIEW_CONVEX_ACCESS_TOKEN }}
+          PREVIEW_PROJECT: ${{ vars.PR_PREVIEW_CONVEX_PROJECT }}
+        run: |
+          set -euo pipefail
+          : "${CONVEX_TOKEN:?Set PR_PREVIEW_CONVEX_ACCESS_TOKEN}"
+          : "${PREVIEW_PROJECT:?Set PR_PREVIEW_CONVEX_PROJECT}"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" > "$RUNNER_TEMP/preview-prs.json"
+          node --input-type=module <<'JS'
+          import { appendFileSync, readFileSync } from 'node:fs';
+          const project = process.env.PREVIEW_PROJECT.split(':');
+          if (project.length !== 2 || project.some(part => !/^[a-z0-9-]+$/.test(part))) {
+            throw new Error('Expected a team-slug:project-slug project reference.');
+          }
+          const [team, slug] = project;
+          const prs = JSON.parse(readFileSync(`${process.env.RUNNER_TEMP}/preview-prs.json`, 'utf8')).flat();
+          const active = prs.filter(pr => pr.state === 'open' &&
+            pr.head.repo?.full_name === process.env.GITHUB_REPOSITORY &&
+            pr.labels.some(label => label.name === 'preview'));
+          const headers = { Authorization: `Bearer ${process.env.CONVEX_TOKEN}`, 'Content-Type': 'application/json' };
+          for (const pr of active) {
+            const reference = `pr/${pr.number}`;
+            const response = await fetch(`https://api.convex.dev/v1/teams/${team}/projects/${slug}/deployment?reference=${encodeURIComponent(reference)}`, { headers });
+            if (response.status === 404) {
+              console.log(`PR #${pr.number}: no deployment to renew; run its preview workflow to provision it.`);
+              continue;
+            }
+            if (!response.ok) {
+              console.error(`PR #${pr.number}: deployment lookup failed (${response.status}).`);
+              process.exitCode = 1;
+              continue;
+            }
+            const deployment = await response.json();
+            if (deployment.deploymentType !== 'dev' || deployment.reference !== reference ||
+                typeof deployment.name !== 'string' || typeof deployment.expiresAt !== 'number') {
+              console.error(`PR #${pr.number}: refusing to renew an unexpected deployment.`);
+              process.exitCode = 1;
+              continue;
+            }
+            console.log(`target: dev (${deployment.name}, ${reference})`);
+            const expiresAt = Math.max(deployment.expiresAt, Date.now() + 5 * 24 * 60 * 60 * 1000);
+            const updated = await fetch(`https://api.convex.dev/v1/deployments/${encodeURIComponent(deployment.name)}`, {
+              method: 'PATCH', headers, body: JSON.stringify({ expiresAt }),
+            });
+            if (!updated.ok) {
+              console.error(`PR #${pr.number}: renewal failed (${updated.status}).`);
+              process.exitCode = 1;
+              continue;
+            }
+            const message = `PR #${pr.number}: ${deployment.name} renewed until ${new Date(expiresAt).toISOString()}.`;
+            console.log(message);
+            appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${message}\n\n`);
+            // Keep the existing preview comment's expiration current after renewal.
+            const githubHeaders = { Authorization: `Bearer ${process.env.GH_TOKEN}`, 'Content-Type': 'application/json' };
+            const commentsUrl = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/${pr.number}/comments`;
+            for (let page = 1; ; page += 1) {
+              const listed = await fetch(`${commentsUrl}?per_page=100&page=${page}`, { headers: githubHeaders });
+              if (!listed.ok) {
+                console.error(`PR #${pr.number}: comment lookup failed (${listed.status}).`);
+                process.exitCode = 1;
+                break;
+              }
+              const comments = await listed.json();
+              const comment = comments.find(comment => comment.user.login === 'github-actions[bot]' &&
+                comment.body.startsWith('<!-- isolated-pr-preview -->'));
+              if (comment) {
+                const body = comment.body.replace(
+                  /<!-- convex-expiry:start -->[\s\S]*?<!-- convex-expiry:end -->/,
+                  `<!-- convex-expiry:start -->Convex expires: **${new Date(expiresAt).toISOString()}**.<!-- convex-expiry:end -->`
+                );
+                if (body !== comment.body) {
+                  const patched = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/comments/${comment.id}`, {
+                    method: 'PATCH', headers: githubHeaders, body: JSON.stringify({ body }),
+                  });
+                  if (!patched.ok) {
+                    console.error(`PR #${pr.number}: comment update failed (${patched.status}).`);
+                    process.exitCode = 1;
+                  }
+                }
+                break;
+              }
+              if (comments.length < 100) break;
+            }
+          }
+          console.log(`Checked ${active.length} open labeled PRs.`);
+          JS

@@ -1,0 +1,69 @@
+{
+  "$schema": "./node_modules/turbo/schema.json",
+  "globalDependencies": [
+    ".env.local",
+    ".prettierignore",
+    "prettier.config.mjs",
+    ".oxlintrc.json"
+  ],
+  "futureFlags": {
+    "pruneIncludesGlobalFiles": true
+  },
+  "concurrency": "11",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**"],
+      "inputs": ["$TURBO_DEFAULT$", ".env.local"]
+    },
+    "@repo/frontend#build": {
+      "dependsOn": ["^build"],
+      "env": ["VITE_CONVEX_URI", "VITE_WORKOS_CLIENT_ID", "VITE_PR_PREVIEW"],
+      "outputs": ["dist/**", "build/**"],
+      "inputs": ["$TURBO_DEFAULT$", ".env.local"]
+    },
+    "@repo/backend#build": {
+      "env": [
+        "CONVEX_DEPLOY_KEY",
+        "CONVEX_SITE_URL",
+        "WORKOS_API_KEY",
+        "WORKOS_CLIENT_ID",
+        "WORKOS_WEBHOOK_SECRET"
+      ],
+      "outputs": []
+    },
+    "test": {
+      "persistent": true,
+      "outputs": []
+    },
+    "test:run": {
+      "dependsOn": ["^test:run"],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^build", "^typecheck"]
+    },
+    "@repo/frontend#typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "lint": {},
+    "lint:fix": {},
+    "format:check": {},
+    "format:write": {
+      "cache": false
+    },
+    "dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "@repo/backend#confect:dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "@repo/backend#dev": {
+      "with": ["@repo/backend#confect:dev"],
+      "persistent": true,
+      "cache": false
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "@repo/backend",
+  "private": true,
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "type": "module",
+  "imports": {
+    "#convex/_generated/*": {
+      "types": "./src/convex/_generated/*.d.ts",
+      "default": "./src/convex/_generated/*.js"
+    },
+    "#convex/*": "./src/convex/*.ts"
+  },
+  "exports": {
+    "./refs": "./src/confect/_generated/refs.ts",
+    "./docs": "./src/confect/_generated/docs.ts",
+    "./id": "./src/confect/_generated/id.ts",
+    "./shared/exampleWorkflows": "./src/confect/modules/exampleWorkflows/domain/models.ts"
+  },
+  "scripts": {
+    "confect:codegen": "pnpm -w run confect:codegen",
+    "confect:dev": "pnpm -w run confect:dev",
+    "build": "pnpm run typecheck",
+    "dev": "pnpm -w exec convex dev",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "pnpm -w exec oxlint packages/backend",
+    "lint:fix": "pnpm -w exec oxlint --fix packages/backend",
+    "format:check": "pnpm -w exec prettier --check \"packages/backend/**/*.{ts,tsx,js,json,mdx}\"",
+    "format:write": "pnpm -w exec prettier --write \"packages/backend/**/*.{ts,tsx,js,json,mdx}\" --cache --cache-strategy content --cache-location packages/backend/node_modules/.cache/prettier/format-write"
+  },
+  "dependencies": {
+    "@confect/cli": "catalog:",
+    "@confect/core": "catalog:",
+    "@confect/server": "catalog:",
+    "@convex-dev/workflow": "0.4.6",
+    "@convex-dev/workos-authkit": "0.2.9",
+    "@effect/platform-node": "catalog:",
+    "@workos-inc/node": "10.13.0",
+    "convex": "catalog:",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@confect/test": "catalog:",
+    "@convex-dev/eslint-plugin": "4.0.0",
+    "@edge-runtime/vm": "5.0.0",
+    "@effect/vitest": "catalog:",
+    "@types/node": "catalog:",
+    "@typescript/native": "catalog:",
+    "convex-test": "0.0.56",
+    "oxlint": "catalog:",
+    "typescript": "catalog:",
+    "vite": "8.3.0",
+    "vitest": "catalog:"
+  }
+}

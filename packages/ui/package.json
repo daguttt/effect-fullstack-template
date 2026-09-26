@@ -1,0 +1,75 @@
+{
+  "name": "@repo/ui",
+  "version": "0.0.0",
+  "description": "Shared UI components",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles": "./src/index.css"
+  },
+  "imports": {
+    "#components/*": "./src/components/*.tsx",
+    "#lib/*": "./src/lib/*.ts",
+    "#hooks/*": "./src/hooks/*.ts"
+  },
+  "scripts": {
+    "dev:start": "vite",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "typecheck": "tsc -b --noEmit",
+    "lint": "pnpm -w exec oxlint packages/ui",
+    "lint:fix": "pnpm -w exec oxlint --fix packages/ui",
+    "format:check": "pnpm -w exec prettier --check \"packages/ui/**/*.{ts,tsx,html,js,jsx,jsonc,json,astro,mdx}\"",
+    "format:write": "pnpm -w exec prettier --write \"packages/ui/**/*.{ts,tsx,html,js,jsx,jsonc,json,astro,mdx}\" --cache --cache-strategy content --cache-location packages/ui/node_modules/.cache/prettier/format-write"
+  },
+  "peerDependencies": {
+    "@base-ui/react": "^1.6.0",
+    "@base-ui/utils": "^0.3.0 || ^0.4.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.0",
+    "lucide-react": "^1.14.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "tailwind-merge": "^3.5.0"
+  },
+  "devDependencies": {
+    "@babel/core": "7.29.6",
+    "@base-ui/react": "catalog:frontend",
+    "@base-ui/utils": "catalog:frontend",
+    "@fontsource-variable/nunito-sans": "catalog:frontend",
+    "@fontsource-variable/roboto": "catalog:frontend",
+    "@rolldown/plugin-babel": "0.2.3",
+    "@tailwindcss/vite": "catalog:frontend",
+    "@testing-library/react": "catalog:frontend",
+    "@types/babel__core": "7.20.5",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:frontend",
+    "@types/react-dom": "catalog:frontend",
+    "@typescript/native": "catalog:",
+    "@vitejs/plugin-react": "catalog:frontend",
+    "babel-plugin-react-compiler": "catalog:frontend",
+    "class-variance-authority": "catalog:frontend",
+    "clsx": "catalog:frontend",
+    "jsdom": "catalog:frontend",
+    "lucide-react": "catalog:frontend",
+    "react": "catalog:frontend",
+    "react-dom": "catalog:frontend",
+    "shadcn": "catalog:frontend",
+    "tailwind-merge": "catalog:frontend",
+    "tailwindcss": "catalog:frontend",
+    "tw-animate-css": "catalog:frontend",
+    "typescript": "catalog:",
+    "vite": "catalog:frontend",
+    "vitest": "catalog:"
+  },
+  "dependencies": {
+    "sonner": "^2.0.8"
+  }
+}

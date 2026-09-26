@@ -1,0 +1,10 @@
+{
+  "$schema": "./packages/backend/node_modules/convex/schemas/convex.schema.json",
+  "functions": "./packages/backend/src/convex/",
+  "aiFiles": {
+    "enabled": true,
+    "skills": {
+      "agents": ["cursor", "codex", "claude-code"]
+    }
+  }
+}

@@ -1,0 +1,5 @@
+# Use Layout Routes for Frontend Access Policy
+
+Route context carries router infrastructure only: the Convex client. It never carries auth provider state. Access policy and visual shells belong to layout routes instead: `_auth-public` owns sign-in and sign-up chrome and bounces a signed-in visitor to their `returnTo`, and `_authenticated` owns the signed-in check. Hook-based layout checks won over route-context auth checks because Convex and WorkOS auth state already live in React providers, and passing raw auth objects through context makes leaf routes derive policy themselves.
+
+The WorkOS callback sits outside every layout as an auth-completion route that redirects to the return path carried in the sign-in `state` or stored before sign-in, falling back to `/app`. Sign-out lives directly under `_authenticated` with minimal UI so it can require a session without inheriting app chrome, and the sign-out callback waits for AuthKit to report no user before leaving, because Convex auth can read as signed out while the WorkOS session is still active.

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "@effect/language-service",
+        "namespaceImportPackages": ["effect"],
+        "ignoreEffectSuggestionsInTscExitCode": true,
+        "ignoreEffectWarningsInTscExitCode": false,
+        "ignoreEffectErrorsInTscExitCode": false
+      }
+    ],
+    "composite": true,
+    "lib": ["ESNext", "DOM"],
+    "types": ["node"],
+    "target": "ESNext",
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "skipLibCheck": true
+  },
+  "include": ["src/confect/**/*"],
+  "exclude": ["node_modules", "convex/_generated"],
+  "extends": ["../../tsconfig.base.json"]
+}

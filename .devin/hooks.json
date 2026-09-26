@@ -1,0 +1,8 @@
+{
+  "hooks": [
+    {
+      "event": "post_setup_worktree",
+      "command": "pnpm setup:worktree"
+    }
+  ]
+}

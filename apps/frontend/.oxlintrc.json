@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["../../.oxlintrc.json"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["#modules/*/*", "#/*/*"],
+            "message": "Import from the module public API instead, for example `#modules/organizations`."
+          },
+          {
+            "group": ["../*", "../**"],
+            "message": "Import using the aliases instead, for example `#modules/authentication` or `#routes/_authenticated/book/index`."
+          }
+        ]
+      }
+    ]
+  }
+}

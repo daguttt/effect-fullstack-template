@@ -1,0 +1,232 @@
+name: Isolated PR preview
+
+on:
+  pull_request:
+    types: [labeled, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+# Provisioning must finish persisting credentials before another push can run.
+concurrency:
+  group: isolated-pr-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      contains(github.event.pull_request.labels.*.name, 'preview') &&
+      (github.event.action != 'labeled' || github.event.label.name == 'preview')
+    runs-on: ubuntu-latest
+    outputs:
+      active: ${{ steps.check.outputs.active }}
+    steps:
+      - name: Check current PR and actor
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          permission=$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$GITHUB_ACTOR/permission" --jq .permission)
+          case "$permission" in
+            admin|maintain|write) ;;
+            *) echo 'Only repository writers can request preview builds.' >&2; exit 1 ;;
+          esac
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$RUNNER_TEMP/preview-pr.json"
+          active=$(jq --arg sha "$HEAD_SHA" --arg repo "$GITHUB_REPOSITORY" \
+            '.state == "open" and .head.sha == $sha and .head.repo.full_name == $repo and any(.labels[]; .name == "preview")' \
+            "$RUNNER_TEMP/preview-pr.json")
+          echo "active=$active" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: check
+    if: needs.check.outputs.active == 'true'
+    outputs:
+      url: ${{ steps.vercel.outputs.url }}
+      expires_at: ${{ steps.summary.outputs.expires_at }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: pr-${{ github.event.pull_request.number }}
+      url: ${{ steps.vercel.outputs.url }}
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PREVIEW_PROJECT: ${{ vars.PR_PREVIEW_CONVEX_PROJECT }}
+      VERCEL_ORG_ID: ${{ vars.PR_PREVIEW_VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.PR_PREVIEW_VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Validate preview configuration
+        env:
+          CONVEX_TOKEN: ${{ secrets.PR_PREVIEW_CONVEX_ACCESS_TOKEN }}
+          VERCEL_TOKEN: ${{ secrets.PR_PREVIEW_VERCEL_TOKEN }}
+        run: |
+          set -euo pipefail
+          : "${PREVIEW_PROJECT:?Set PR_PREVIEW_CONVEX_PROJECT to team-slug:project-slug}"
+          : "${VERCEL_ORG_ID:?Set PR_PREVIEW_VERCEL_ORG_ID}"
+          : "${VERCEL_PROJECT_ID:?Set PR_PREVIEW_VERCEL_PROJECT_ID}"
+          : "${CONVEX_TOKEN:?Set PR_PREVIEW_CONVEX_ACCESS_TOKEN}"
+          : "${VERCEL_TOKEN:?Set PR_PREVIEW_VERCEL_TOKEN}"
+
+      - uses: pnpm/action-setup@d9184bf108216479bc5a137cc391f4d7b14c870b # v6.1.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Install pinned WorkOS CLI
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            https://github.com/workos/cli/releases/download/v0.22.0/workos-linux-x64 \
+            --output "$RUNNER_TEMP/workos"
+          echo "d74f58c13e22ccc4961d38b24160501cbab7cf6ec1bc8bf6c7562891a97993f8  $RUNNER_TEMP/workos" | sha256sum --check
+          chmod 755 "$RUNNER_TEMP/workos"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+
+      - name: Provision, renew and seed isolated backend
+        env:
+          CONVEX_OVERRIDE_ACCESS_TOKEN: ${{ secrets.PR_PREVIEW_CONVEX_ACCESS_TOKEN }}
+        run: pnpm -F @repo/scripts exec tsx src/preview/main.ts prepare --project "$PREVIEW_PROJECT" --pr "$PR_NUMBER"
+
+      - name: Build frontend
+        run: pnpm -F @repo/frontend build
+
+      - name: Package static Vercel deployment
+        run: |
+          set -euo pipefail
+          mkdir -p .vercel/output/static
+          cp -R apps/frontend/dist/. .vercel/output/static/
+          node --input-type=module <<'JS'
+          import { writeFileSync } from 'node:fs';
+          writeFileSync('.vercel/project.json', JSON.stringify({
+            orgId: process.env.VERCEL_ORG_ID,
+            projectId: process.env.VERCEL_PROJECT_ID,
+          }));
+          writeFileSync('.vercel/output/config.json', JSON.stringify({
+            version: 3,
+            routes: [{ handle: 'filesystem' }, { src: '/(.*)', dest: '/index.html' }],
+          }));
+          JS
+
+      - name: Deploy static frontend to Vercel
+        id: vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.PR_PREVIEW_VERCEL_TOKEN }}
+        run: |
+          set -euo pipefail
+          pnpm dlx vercel@59.10.0 deploy --prebuilt --yes --token "$VERCEL_TOKEN" \
+            --meta "githubCommitSha=$HEAD_SHA" --meta "previewPr=$PR_NUMBER" \
+            > "$RUNNER_TEMP/preview-url.txt"
+          # Vercel emits an envelope in agent mode and a URL in ordinary CI.
+          url=$(jq --raw-input --slurp --raw-output \
+            '. as $raw | try (fromjson | .deployment.url) catch ($raw | rtrimstr("\n"))' \
+            "$RUNNER_TEMP/preview-url.txt")
+          [[ "$url" =~ ^https://[a-z0-9-]+\.vercel\.app$ ]] || { echo 'Vercel did not return a deployment URL.' >&2; exit 1; }
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Configure AuthKit with the Vercel URL
+        env:
+          CONVEX_OVERRIDE_ACCESS_TOKEN: ${{ secrets.PR_PREVIEW_CONVEX_ACCESS_TOKEN }}
+          PREVIEW_URL: ${{ steps.vercel.outputs.url }}
+        run: pnpm -F @repo/scripts exec tsx src/preview/main.ts configure --project "$PREVIEW_PROJECT" --pr "$PR_NUMBER" --url "$PREVIEW_URL"
+
+      - name: Verify and publish preview
+        id: summary
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_URL: ${{ steps.vercel.outputs.url }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --retry 3 "$PREVIEW_URL" --output /dev/null
+          curl --fail --silent --show-error --retry 3 "$PREVIEW_URL/callback" --output /dev/null
+          current_sha=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .head.sha)
+          if [ "$current_sha" != "$HEAD_SHA" ]; then
+            echo 'A newer commit is queued. This preview is for the SHA below.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          node --input-type=module <<'JS' >> "$GITHUB_STEP_SUMMARY"
+          import { appendFileSync, readFileSync } from 'node:fs';
+          const info = JSON.parse(readFileSync('.preview-info.json', 'utf8'));
+          appendFileSync(process.env.GITHUB_OUTPUT, `expires_at=${new Date(info.expiresAt).toISOString()}\n`);
+          console.log(`[Open PR preview](${process.env.PREVIEW_URL})`);
+          console.log(`\nCommit: \`${process.env.HEAD_SHA}\``);
+          console.log(`\nConvex: \`${info.reference}\` (${info.convexUrl})`);
+          console.log(`\nExpires: ${new Date(info.expiresAt).toISOString()}. Pushes and the daily keepalive renew this while the PR is open and labeled.`);
+          console.log('\nSign in with the development accounts documented in docs/agents/linked-git-worktree.md.');
+          JS
+
+  comment:
+    needs: [check, deploy]
+    if: >-
+      always() &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      contains(github.event.pull_request.labels.*.name, 'preview') &&
+      (github.event.action != 'labeled' || github.event.label.name == 'preview') &&
+      (needs.check.result == 'failure' || needs.deploy.result != 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      pull-requests: write
+    steps:
+      - name: Recreate preview status comment at the end of the timeline
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          PREVIEW_URL: ${{ needs.deploy.outputs.url }}
+          EXPIRES_AT: ${{ needs.deploy.outputs.expires_at }}
+        run: |
+          set -euo pipefail
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT/jobs?per_page=100" > "$RUNNER_TEMP/preview-jobs.json"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments?per_page=100" > "$RUNNER_TEMP/preview-comments.json"
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const read = name => JSON.parse(readFileSync(`${process.env.RUNNER_TEMP}/${name}.json`, 'utf8'));
+          const marker = '<!-- isolated-pr-preview -->';
+          const comments = read('preview-comments').flat();
+          const existing = comments.find(comment => comment.user.login === 'github-actions[bot]' && comment.body.startsWith(marker));
+          const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}/attempts/${process.env.GITHUB_RUN_ATTEMPT}`;
+          const ready = process.env.DEPLOY_RESULT === 'success';
+          const failures = read('preview-jobs').flatMap(page => page.jobs)
+            .filter(job => ['failure', 'timed_out', 'cancelled'].includes(job.conclusion))
+            .map(job => {
+              const step = job.steps.find(step => ['failure', 'cancelled'].includes(step.conclusion));
+              const name = (step?.name ?? job.name).replace(/[\[\]`<>\r\n]/g, '').slice(0, 120);
+              return `[${name}](${job.html_url})`;
+            }).slice(0, 2);
+          const status = ready
+            ? `Preview ready: [Open preview](${process.env.PREVIEW_URL})`
+            : `Preview ${process.env.DEPLOY_RESULT === 'cancelled' ? 'canceled' : 'failed'}${failures.length ? ` at ${failures.join(', ')}` : '.'}`;
+          const expiry = ready
+            ? `<!-- convex-expiry:start -->Convex expires: **${process.env.EXPIRES_AT}**.<!-- convex-expiry:end -->\n\nDaily renewal extends this while the PR is open and labeled \`preview\`.`
+            : 'A working preview was not published for this commit. Fix the failed step, then retry.';
+          const body = `${marker}\n${status}\n\n${expiry}\n\nTo ${ready ? 'renew now' : 'retry'}: push a commit or remove and re-add \`preview\` on the open PR.\n\n[Workflow run](${runUrl}) · Commit \`${process.env.HEAD_SHA.slice(0, 7)}\``;
+          writeFileSync(`${process.env.RUNNER_TEMP}/preview-comment-body.json`, JSON.stringify({ body }));
+          writeFileSync(`${process.env.RUNNER_TEMP}/preview-comment-id.txt`, existing ? String(existing.id) : '');
+          JS
+          comment_id=$(cat "$RUNNER_TEMP/preview-comment-id.txt")
+          if [ -n "$comment_id" ]; then
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" --silent
+          fi
+          gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --input "$RUNNER_TEMP/preview-comment-body.json" --silent
+
+  renew:
+    needs: [deploy, comment]
+    if: always() && needs.deploy.result == 'success'
+    permissions:
+      pull-requests: write
+    uses: ./.github/workflows/pr-preview-keepalive.yml
+    secrets:
+      PR_PREVIEW_CONVEX_ACCESS_TOKEN: ${{ secrets.PR_PREVIEW_CONVEX_ACCESS_TOKEN }}

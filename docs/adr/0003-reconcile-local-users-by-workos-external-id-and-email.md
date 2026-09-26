@@ -1,0 +1,5 @@
+# Reconcile Local Users by WorkOS External Id and Email
+
+A local User is matched to a WorkOS payload by the WorkOS external user id first and by email second. Email is the continuity key: when WorkOS recreates a person's identity, as it does whenever a worktree pairs a surviving Convex deployment with a fresh WorkOS environment, the email match reuses the existing User, rewrites its WorkOS-derived fields including the new `externalId`, and clears `deletedAt`. When the two lookups resolve different Users, the upsert fails with `Users/IdentityConflictError` instead of guessing. The Convex identity token identifier is also stored on the User, derived from the WorkOS client id and external user id, and serves auth-facing lookups such as `users.me`; it is not an upsert key because it is synthesized rather than observed.
+
+The mirrored email is stored trimmed and lower-cased, and every lookup by it normalizes its key the same way, because WorkOS matches addresses case-insensitively and a verbatim mirror with an exact index would let one address appear twice locally.

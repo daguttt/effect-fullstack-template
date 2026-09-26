@@ -1,0 +1,20 @@
+# Common
+dist/
+build/
+pnpm-lock.yaml
+
+# Convex
+**/convex/_generated/
+**/confect/_generated/
+packages/backend/src/convex/**/*.ts
+!packages/backend/src/convex/convex.config.ts
+
+# TanStack Router
+**/routeTree.gen.ts
+
+# Public assets
+public/
+
+# AI
+.agents/
+.claude/

@@ -1,0 +1,76 @@
+{
+  // Editor
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // TypeScript
+  "js/ts.tsdk.path": "./node_modules/@typescript/native/bin",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "js/ts.tsdk.additionalLocations": ["./node_modules/@typescript/native/bin"],
+  "js/ts.experimental.useTsgo": true,
+
+  // Formatting
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // Search
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/coverage": true,
+    "**/.pids": true,
+    "**/.logs": true,
+    "**/routeTree.gen.ts": true
+  },
+
+  // Git
+  "git.ignoreLimitWarning": true,
+  "git.autofetch": true,
+
+  // Terminal
+  "terminal.integrated.env.osx": {
+    "NODE_ENV": "development"
+  },
+
+  // Tailwind
+  "tailwindCSS.experimental.configFile": {
+    "packages/ui/src/index.css": ["packages/ui/src/**", "apps/frontend/src/**"]
+  },
+  "tailwindCSS.classFunctions": ["tw", "cva", "cx", "cn", "classNames"],
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "ngClass",
+    "class:list",
+    "[a-z0-9]*[Cc]lasses"
+  ],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
+  // TanStack Router
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true,
+    "**/convex/_generated/*/**": true
+  },
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd ../.. && pnpm run confect:codegen && pnpm exec convex deploy --cmd 'pnpm run build:frontend' --cmd-url-env-var-name VITE_CONVEX_URI",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

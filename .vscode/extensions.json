@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "prisma.prisma",
+    "bradlc.vscode-tailwindcss",
+    "ms-azuretools.vscode-docker",
+    "formulahendry.auto-rename-tag",
+    "mylesmurphy.prettify-ts",
+    "yoavbls.pretty-ts-errors"
+  ]
+}

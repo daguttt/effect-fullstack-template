@@ -1,0 +1,48 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "import"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "all",
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["#modules/*/*", "#/*/*"],
+            "message": "Import from the module public API instead, for example '#modules/organizations'."
+          }
+        ]
+      }
+    ],
+    "import/no-cycle": ["error", { "ignoreTypes": true }],
+    "typescript/no-import-type-side-effects": "error",
+    "react/exhaustive-deps": "warn"
+  },
+  "ignorePatterns": [
+    "**/convex/_generated/**",
+    "**/confect/_generated/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/playwright-report/**",
+    "**/test-results/**",
+    "**/src/generated/**",
+    "**/prisma/migrations/**",
+    "legacy-apps/reservation-service/migrations/**",
+    "scripts/**",
+    ".agents/**",
+    ".windsurf/**",
+    ".claude/**"
+  ]
+}

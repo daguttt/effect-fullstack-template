@@ -9,5 +9,6 @@
     "@convex-dev/explicit-table-ids": "error",
     "@convex-dev/no-filter-in-query": "warn",
     "@convex-dev/no-schema-import-cycle": "error"
-  }
+  },
+  "ignorePatterns": ["src/convex/_generated/**", "src/confect/_generated/**"]
 }

@@ -1,5 +1,6 @@
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "$schema": "./node_modules/@effect/tsgo/oxlint-schema.json",
+  "extends": ["./node_modules/@effect/tsgo/oxlint-presets/recommended.json"],
   "plugins": ["typescript", "react", "import"],
   "categories": {
     "correctness": "error"
@@ -24,10 +25,30 @@
         ]
       }
     ],
-    "import/no-cycle": ["error", { "ignoreTypes": true }],
+    "import/no-cycle": [
+      "error",
+      {
+        "ignoreTypes": true
+      }
+    ],
     "typescript/no-import-type-side-effects": "error",
-    "react/exhaustive-deps": "warn"
+    "react/exhaustive-deps": "warn",
+    "effecttsgo/async-function": "off",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error"
   },
+  "overrides": [
+    {
+      "files": ["**/*.config.ts"],
+      "rules": {
+        "effecttsgo/node-builtin-import": "off",
+        "effecttsgo/process-env": "off"
+      }
+    }
+  ],
   "ignorePatterns": [
     "**/convex/_generated/**",
     "**/confect/_generated/**",
@@ -43,6 +64,7 @@
     "scripts/**",
     ".agents/**",
     ".windsurf/**",
-    ".claude/**"
+    ".claude/**",
+    "legacy-packages/legacy-e2e/**"
   ]
 }

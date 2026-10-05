@@ -1,16 +1,5 @@
 # Frontend Standards
 
-## Module imports
-
-- Import application modules exposed through `#modules/*` with namespace import syntax.
-- Name the namespace after the module, such as `Authentication`, `CommonUI`, or `Forms`, and access its public API through that namespace.
-
-```ts
-import * as Forms from '#modules/forms';
-
-Forms.useAppForm({ ... });
-```
-
 ## Backend-derived types
 
 - Frontend-owned types are reserved for presentation-only state that has no backend representation; every persisted entity and function payload type is inferred from the backend.
@@ -21,16 +10,7 @@ Forms.useAppForm({ ... });
 ## Route-local features
 
 - Co-locate functionality shared within a route subtree in a `-feat/` directory.
-- Every `-feat/` directory exposes a deliberate public API through `-feat/index.ts`, with exports at the top of the barrel file.
-- Nested routes import parent-route functionality through the parent `-feat` API.
 - When an export's consumers span sibling subtrees — no single `-feat` is an ancestor of all of them — promote it to a `#modules/*` module. Promote on the third consumer.
-- Namespace route imports as `*Route` and route feature imports as `*RouteFeat`.
-
-```ts
-import * as AppRouteFeat from '#routes/_authenticated/app/-feat';
-
-AppRouteFeat.ExampleWorkflowPanel;
-```
 
 ## Forms
 

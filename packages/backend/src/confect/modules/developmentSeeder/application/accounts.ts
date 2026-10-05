@@ -13,7 +13,7 @@ export const createDevelopmentAccount = Effect.fn(
   'DevelopmentSeeder.createDevelopmentAccount'
 )(
   function* (account: Domain.DevelopmentAccount) {
-    const mutationRunner = yield* MutationRunner;
+    const { runMutation: mutationRunner } = yield* MutationRunner;
     const workos = yield* WorkOSApplication.WorkOSService;
 
     const { user: externalUser, outcome } =

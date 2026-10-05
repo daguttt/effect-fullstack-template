@@ -6,9 +6,9 @@ import * as NodeServices from '@effect/platform-node/NodeServices';
 import * as Console from 'effect/Console';
 import * as Effect from 'effect/Effect';
 import * as Layer from 'effect/Layer';
-import * as Command from 'effect/unstable/cli/Command';
-import * as Flag from 'effect/unstable/cli/Flag';
-import * as Prompt from 'effect/unstable/cli/Prompt';
+import * as Command from 'effect/cli/Command';
+import * as Flag from 'effect/cli/Flag';
+import * as Prompt from 'effect/cli/Prompt';
 
 import * as ConvexPlatform from './convexPlatform.ts';
 import * as EnvFile from './envFile.ts';

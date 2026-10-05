@@ -5,7 +5,7 @@ import { RegistryContext } from '@effect/atom-react';
 import { useAuth } from '@workos-inc/authkit-react';
 import { useConvexAuth } from 'convex/react';
 import { Duration } from 'effect';
-import { AtomRegistry } from 'effect/unstable/reactivity';
+import { AtomRegistry } from 'effect/reactivity';
 import { type Mock, vi } from 'vitest';
 
 /**

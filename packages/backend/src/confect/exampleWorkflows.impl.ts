@@ -38,7 +38,7 @@ const startImpl = FunctionImpl.make(
     Effect.gen(function* () {
       const identity = yield* Authentication.CurrentUserIdentity;
       const writer = yield* DatabaseWriter;
-      const mutationRunner = yield* MutationRunner;
+      const { runMutation: mutationRunner } = yield* MutationRunner;
 
       const runId = yield* writer
         .table('exampleWorkflowRuns')

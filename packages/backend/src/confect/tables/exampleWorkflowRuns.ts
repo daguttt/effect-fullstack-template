@@ -1,4 +1,4 @@
-import { Table } from '@confect/server';
+import { Table } from '@confect/core';
 
 import * as ExampleWorkflowsDomain from '../modules/exampleWorkflows/domain';
 

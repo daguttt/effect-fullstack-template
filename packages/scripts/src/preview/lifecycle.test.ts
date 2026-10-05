@@ -4,8 +4,8 @@ import * as FileSystem from 'effect/FileSystem';
 import * as Redacted from 'effect/Redacted';
 import * as Ref from 'effect/Ref';
 import * as Schema from 'effect/Schema';
-import * as HttpClient from 'effect/unstable/http/HttpClient';
-import * as HttpClientResponse from 'effect/unstable/http/HttpClientResponse';
+import * as HttpClient from 'effect/http/HttpClient';
+import * as HttpClientResponse from 'effect/http/HttpClientResponse';
 
 import * as ConvexCli from '../worktree/convexCli.ts';
 import * as TestProviders from '../worktree/testProviders.ts';

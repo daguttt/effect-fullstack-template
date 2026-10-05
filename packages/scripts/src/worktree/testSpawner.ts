@@ -7,8 +7,8 @@ import * as Layer from 'effect/Layer';
 import * as PlatformError from 'effect/PlatformError';
 import * as Sink from 'effect/Sink';
 import * as Stream from 'effect/Stream';
-import * as ChildProcess from 'effect/unstable/process/ChildProcess';
-import * as Spawner from 'effect/unstable/process/ChildProcessSpawner';
+import * as ChildProcess from 'effect/process/ChildProcess';
+import * as Spawner from 'effect/process/ChildProcessSpawner';
 
 import * as CliRunner from './cliRunner.ts';
 

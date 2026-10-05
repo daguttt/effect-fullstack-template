@@ -18,7 +18,7 @@ export const clientSchema = {
   ),
   VITE_CONVEX_URI: Schema.toStandardSchemaV1(Schema.String.check(isValidUrl)),
   VITE_WORKOS_CLIENT_ID: Schema.toStandardSchemaV1(
-    Schema.String.check(Schema.isStartsWith('client_'))
+    Schema.String.check(Schema.isStartingWith('client_'))
   ),
   VITE_DEV_SERVER_PORT: Schema.toStandardSchemaV1(
     Schema.UndefinedOr(

@@ -10,7 +10,7 @@ import * as Effect from 'effect/Effect';
 import * as Layer from 'effect/Layer';
 import * as Redacted from 'effect/Redacted';
 import * as Schema from 'effect/Schema';
-import * as Spawner from 'effect/unstable/process/ChildProcessSpawner';
+import * as Spawner from 'effect/process/ChildProcessSpawner';
 
 import * as CliRunner from './cliRunner.ts';
 

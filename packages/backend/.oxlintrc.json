@@ -11,7 +11,9 @@
     "@convex-dev/require-args-validator": "error",
     "@convex-dev/explicit-table-ids": "error",
     "@convex-dev/no-filter-in-query": "warn",
-    "@convex-dev/no-schema-import-cycle": "error"
+    "@convex-dev/no-schema-import-cycle": "error",
+    "@convex-dev/no-process-env": "error",
+    "@convex-dev/no-duplicate-indexes": "error"
   },
   "overrides": [
     {

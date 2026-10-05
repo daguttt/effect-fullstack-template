@@ -12,8 +12,8 @@ import * as Predicate from 'effect/Predicate';
 import * as Redacted from 'effect/Redacted';
 import * as Schema from 'effect/Schema';
 import * as Stream from 'effect/Stream';
-import * as ChildProcess from 'effect/unstable/process/ChildProcess';
-import * as Spawner from 'effect/unstable/process/ChildProcessSpawner';
+import * as ChildProcess from 'effect/process/ChildProcess';
+import * as Spawner from 'effect/process/ChildProcessSpawner';
 
 import * as CommandEnvironment from './commandEnvironment.ts';
 

@@ -8,8 +8,8 @@ import * as FileSystem from 'effect/FileSystem';
 import * as Layer from 'effect/Layer';
 import * as Path from 'effect/Path';
 import * as Schema from 'effect/Schema';
-import * as Command from 'effect/unstable/cli/Command';
-import * as Flag from 'effect/unstable/cli/Flag';
+import * as Command from 'effect/cli/Command';
+import * as Flag from 'effect/cli/Flag';
 
 import * as ConvexCli from '../worktree/convexCli.ts';
 import * as EnvFile from '../worktree/envFile.ts';

@@ -8,7 +8,7 @@ import { ConvexProviderWithAuth, ConvexReactClient } from 'convex/react';
 import { Duration } from 'effect';
 import { createRoot } from 'react-dom/client';
 
-import { Toaster, useIsMobile } from '@repo/ui';
+import { Toaster, tw, useIsMobile } from '@repo/ui';
 
 import * as Authentication from '#modules/authentication';
 
@@ -50,7 +50,7 @@ function AppToaster() {
       offset={isMobile ? MOBILE_TOAST_OFFSET : undefined}
       mobileOffset={isMobile ? MOBILE_TOAST_OFFSET : undefined}
       toastOptions={{
-        classNames: { toast: isMobile ? 'text-base!' : undefined },
+        classNames: { toast: isMobile ? tw`text-base!` : undefined },
       }}
     />
   );

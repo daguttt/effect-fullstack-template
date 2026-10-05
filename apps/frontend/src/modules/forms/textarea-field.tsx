@@ -1,5 +1,7 @@
 import { type ComponentProps, useId } from 'react';
 
+import * as Predicate from 'effect/Predicate';
+
 import { Label, Textarea, cn } from '@repo/ui';
 
 import { useFieldContext } from './form-context';
@@ -49,7 +51,7 @@ export function TextareaField({
         value={field.state.value}
         onBlur={field.handleBlur}
         onChange={(event) => field.handleChange(event.target.value)}
-        aria-invalid={error !== null}
+        aria-invalid={Predicate.isNotNull(error)}
         aria-required={required}
       />
       <div className="flex items-start justify-between gap-3">

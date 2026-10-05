@@ -47,11 +47,10 @@ This repo uses a single-context domain documentation layout. See `docs/agents/do
 ### Shared
 
 - Comments are concise, describe how a thing is used (mostly on functions), and move when the code moves.
-- Give a payload schema and its type one bare name and let TypeScript merge them, so call sites never pick between two spellings. Keep the `Dto` suffix for payloads that name a write, with the verb in front (`UpdateUserDto`, `StartExampleWorkflowDto`); read and response shapes use projection nouns instead (`UserDetail`, `RunSummary`). Keep the `Schema` suffix for values something consumes as a schema, such as `UsersTableSchema` or `StartExampleWorkflowFormStandardSchema`.
-- Name compound conditions as descriptive boolean constants before branching on them, check nullability with Effect's `Predicate` refinements (`isNull`, `isNotUndefined`, …) instead of raw `===` comparisons, resolve state immutably (a ternary for simple cases, a value- or Effect-returning IIFE instead of `let` for multi-statement branches), and replace `else` with early-return guards.
+- Keep the `Dto` suffix for payloads that name a write, with the verb in front (`UpdateUserDto`, `StartExampleWorkflowDto`); read and response shapes use projection nouns instead (`UserDetail`, `RunSummary`). Keep the `Schema` suffix for values something consumes as a schema, such as `UsersTableSchema` or `StartExampleWorkflowFormStandardSchema`.
+- Resolve state immutably: a ternary for simple cases, a value- or Effect-returning IIFE instead of `let` for multi-statement branches.
 - Keep logic inline in the function that uses it. A helper earns extraction when it has a **third** caller or when it turns an `else` branch into an early-return guard.
 - Tests assert observable behaviour through the subject's public interface. A tautological test, one that restates the subject's own source or configuration and passes whenever the file exists, proves nothing and is deleted.
-- Use Effect's `Result` module for simple sync error handling instead of `try`/`catch` blocks.
 
 ### Backend
 

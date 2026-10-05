@@ -7,6 +7,9 @@
     "pnpm": ">=12.5.1 <13"
   },
   "packageManager": "pnpm@12.5.1",
+  "oxlint-plugin-effect-standards": {
+    "tailwindStylesheet": "./apps/frontend/src/index.css"
+  },
   "scripts": {
     "confect:codegen": "WORKOS_CLIENT_ID=client_id WORKOS_API_KEY=api_key WORKOS_WEBHOOK_SECRET=webhook confect codegen",
     "confect:dev": "WORKOS_CLIENT_ID=client_id WORKOS_API_KEY=api_key WORKOS_WEBHOOK_SECRET=webhook confect dev",
@@ -48,6 +51,7 @@
     "@typescript/native": "catalog:",
     "convex": "catalog:",
     "oxlint": "catalog:",
+    "oxlint-plugin-effect-standards": "github:daguttt/oxlint-plugin-effect-standards#v0.1.1",
     "oxlint-tsgolint": "7.0.2001",
     "prettier": "3.9.8",
     "prettier-plugin-tailwindcss": "0.8.1",

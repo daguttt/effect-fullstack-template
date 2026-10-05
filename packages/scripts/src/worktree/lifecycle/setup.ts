@@ -312,11 +312,14 @@ const setupWorktree = Effect.fn('setupWorktree')(function* (
       // Sequential. A deployment keeps its environment variables in one
       // record, so parallel `env set` calls race and one loses with
       // `OptimisticConcurrencyControlFailure`.
-      yield* Effect.all([
-        convexCli.envSet('WORKOS_CLIENT_ID', environment.clientId, repoRoot),
-        convexCli.envSet('WORKOS_API_KEY', environment.apiKey, repoRoot),
-        convexCli.envSet('WORKOS_WEBHOOK_SECRET', webhookSecret, repoRoot),
-      ]);
+      yield* Effect.all(
+        [
+          convexCli.envSet('WORKOS_CLIENT_ID', environment.clientId, repoRoot),
+          convexCli.envSet('WORKOS_API_KEY', environment.apiKey, repoRoot),
+          convexCli.envSet('WORKOS_WEBHOOK_SECRET', webhookSecret, repoRoot),
+        ],
+        { concurrency: 1 }
+      );
 
       yield* log('Generating Confect and Convex bridge files');
       yield* ConfectCli.codegen(repoRoot);

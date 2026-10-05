@@ -29,6 +29,8 @@ function DefaultRouteErrorScreen({
   message,
   onRetry,
 }: DefaultRouteErrorScreenProps) {
+  const showsDeveloperDetails = env.DEV && Boolean(debugMessage);
+
   return (
     <main className="fixed inset-0 z-50 grid min-h-dvh place-items-center overflow-hidden bg-background px-6 text-foreground">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,hsl(var(--destructive)/0.12),transparent_28%),radial-gradient(circle_at_20%_84%,hsl(var(--primary)/0.12),transparent_26%)]" />
@@ -60,7 +62,7 @@ function DefaultRouteErrorScreen({
           </Button>
         </div>
 
-        {env.DEV && debugMessage ? (
+        {showsDeveloperDetails ? (
           <details className="w-full rounded-2xl bg-muted/50 px-4 py-3 text-left text-xs text-muted-foreground">
             <summary className="cursor-pointer font-medium">
               Developer details

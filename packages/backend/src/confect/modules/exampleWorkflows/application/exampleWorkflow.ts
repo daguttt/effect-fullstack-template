@@ -6,14 +6,14 @@ import refs from '../../../_generated/refs';
 import * as WorkflowsApplication from '../../workflows/application';
 import type * as Domain from '../domain';
 
-const ExampleWorkflowDto = {
+const RunExampleWorkflowDto = {
   runId: v.id('exampleWorkflowRuns'),
 };
 
-const vExampleWorkflowDto = v.object(ExampleWorkflowDto);
-type ExampleWorkflowDto = Infer<typeof vExampleWorkflowDto>;
+const vRunExampleWorkflowDto = v.object(RunExampleWorkflowDto);
+type RunExampleWorkflowDto = Infer<typeof vRunExampleWorkflowDto>;
 
-export { ExampleWorkflowDto };
+export { RunExampleWorkflowDto };
 
 /**
  * Each `workflowRunner` call is a journaled step: a restarted workflow replays
@@ -21,7 +21,7 @@ export { ExampleWorkflowDto };
  */
 export const exampleWorkflow = Effect.fn('exampleWorkflow')(function* (
   step: WorkflowCtx,
-  args: ExampleWorkflowDto
+  args: RunExampleWorkflowDto
 ): Effect.fn.Return<string, Domain.ExampleWorkflowError> {
   const workflowRunner = WorkflowsApplication.makeConfectWorkflowRunner(step);
 

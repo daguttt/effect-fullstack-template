@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
+import * as Predicate from 'effect/Predicate';
+
 import { useDebouncedText } from './use-debounced-text.hooks';
 
 export const SEARCH_DEBOUNCE_MS = 300;
@@ -68,7 +70,7 @@ export function useUrlSyncedSearchTerm(
     // this same pass, so that stale value reads as null instead of being
     // written back into the URL.
     const settledText = getSettledText();
-    if (settledText === null) return;
+    if (Predicate.isNull(settledText)) return;
 
     const trimmed = settledText.trim();
     // The term the URL holds, or the last one on its way there — while commits

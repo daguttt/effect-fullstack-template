@@ -1,6 +1,9 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "extends": ["../../.oxlintrc.json"],
+  "extends": [
+    "../../.oxlintrc.json",
+    "../../node_modules/oxlint-plugin-effect-standards/configs/frontend.json"
+  ],
   "rules": {
     "no-restricted-imports": [
       "error",

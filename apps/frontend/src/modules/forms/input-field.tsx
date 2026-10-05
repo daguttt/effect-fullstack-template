@@ -78,7 +78,7 @@ export function InputField({
 
           field.handleChange(nextValue);
         }}
-        aria-invalid={error !== null}
+        aria-invalid={Predicate.isNotNull(error)}
         aria-required={required}
       />
       {error ? <p className="text-xs text-destructive">{error}</p> : null}

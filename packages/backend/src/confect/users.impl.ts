@@ -3,6 +3,7 @@ import * as Clock from 'effect/Clock';
 import * as Duration from 'effect/Duration';
 import * as Effect from 'effect/Effect';
 import * as Layer from 'effect/Layer';
+import * as Predicate from 'effect/Predicate';
 
 import refs from './_generated/refs';
 import databaseSchema from './_generated/schema';
@@ -66,7 +67,7 @@ const upsertFromWorkOSImpl = FunctionImpl.make(
       const matchedUserIds = [
         ...new Set(
           [userByExternalId, userByEmail]
-            .filter((user) => user !== null)
+            .filter((user) => Predicate.isNotNull(user))
             .map(({ _id }) => _id)
         ),
       ];

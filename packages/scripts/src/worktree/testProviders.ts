@@ -6,6 +6,7 @@ import * as Path from 'effect/Path';
 import * as Redacted from 'effect/Redacted';
 
 import * as ConvexCli from './convexCli.ts';
+import * as ConvexPlatform from './convexPlatform.ts';
 import * as EnvFile from './envFile.ts';
 import * as Lock from './lock.ts';
 import type * as Repo from './repo.ts';
@@ -14,6 +15,7 @@ import * as WorkosCli from './workosCli.ts';
 
 export {
   fakeConvexCli,
+  fakeConvexPlatform,
   fakeWorkosApi,
   fakeWorkosCli,
   unlockedRegistry,
@@ -103,5 +105,14 @@ const fakeConvexCli = (
     envSet: () => Effect.void,
     devOnce: () => Effect.void,
     run: () => Effect.void,
+    ...overrides,
+  });
+
+const fakeConvexPlatform = (
+  overrides: Partial<ConvexPlatform.ConvexPlatform['Service']> = {}
+): ConvexPlatform.ConvexPlatform['Service'] =>
+  ConvexPlatform.ConvexPlatform.of({
+    findDeployment: () => Effect.succeedNone,
+    deleteDeployment: () => Effect.void,
     ...overrides,
   });

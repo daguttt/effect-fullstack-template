@@ -2,9 +2,10 @@ import * as Console from 'effect/Console';
 import * as Effect from 'effect/Effect';
 import * as FileSystem from 'effect/FileSystem';
 import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
 import * as Schema from 'effect/Schema';
 
-import * as ConvexCli from '../convexCli.ts';
+import * as ConvexPlatform from '../convexPlatform.ts';
 import * as Domain from '../domain.ts';
 import * as EnvFile from '../envFile.ts';
 import * as Lock from '../lock.ts';
@@ -45,6 +46,7 @@ const teardownWorktree = Effect.fn('teardownWorktree')(function* (
   const envFile = yield* EnvFile.EnvFile;
   const registryLock = yield* Lock.WorkosRegistryLock;
   const workosCli = yield* WorkosCli.WorkosCli;
+  const convexPlatform = yield* ConvexPlatform.ConvexPlatform;
 
   const { envFilePath, repoRoot, worktreeId } = worktree;
   const [environmentName, envFileExists] = yield* Effect.all(
@@ -57,9 +59,45 @@ const teardownWorktree = Effect.fn('teardownWorktree')(function* (
     { concurrency: 'unbounded' }
   );
 
+  // Only a dev deployment carrying this worktree's reference is deleted, and
+  // never the project default, the main checkout's selection or one since
+  // promoted to production.
+  const reference = Domain.convexReference(worktreeId);
+  // A selection names its deployment last, as in `dev:calm-otter-1`, which is
+  // how the Convex CLI reads it too.
+  const selectedName = Option.getOrUndefined(
+    yield* envFile.readValue(envFilePath, 'CONVEX_DEPLOYMENT')
+  )
+    ?.split(':')
+    .at(-1);
+  const mainName = Predicate.isUndefined(selectedName)
+    ? undefined
+    : Option.getOrUndefined(
+        yield* envFile.readValue(worktree.mainEnvFilePath, 'CONVEX_DEPLOYMENT')
+      )
+        ?.split(':')
+        .at(-1);
+  const isOwnSelection =
+    Predicate.isNotUndefined(selectedName) &&
+    /^[a-z0-9-]+$/.test(selectedName) &&
+    selectedName !== mainName;
+  const deployment = isOwnSelection
+    ? yield* convexPlatform.findDeployment(selectedName)
+    : Option.none();
+  const ownedDeployment = Option.filter(deployment, (found) => {
+    const isOwnedDevDeployment =
+      found.name === selectedName &&
+      Domain.isExpectedConvexReference(found.reference, worktreeId) &&
+      found.deploymentType === 'dev' &&
+      !found.isDefault;
+    return isOwnedDevDeployment;
+  });
+
   yield* log(`Worktree: ${repoRoot}`);
   yield* log(
-    `Convex deployment: ${Domain.convexReference(worktreeId)} (no action)`
+    Option.isSome(ownedDeployment)
+      ? `Convex deployment to delete: ${ownedDeployment.value.name} (${reference})`
+      : `No Convex deployment of this worktree to delete (${reference})`
   );
   yield* log(
     Option.isSome(environmentName)
@@ -77,6 +115,11 @@ const teardownWorktree = Effect.fn('teardownWorktree')(function* (
     return;
   }
 
+  if (Option.isSome(ownedDeployment)) {
+    yield* convexPlatform.deleteDeployment(ownedDeployment.value.name);
+    yield* log(`Deleted Convex deployment ${ownedDeployment.value.name}`);
+  }
+
   if (Option.isSome(environmentName)) {
     yield* registryLock.withLock(workosCli.envRemove(environmentName.value));
     yield* log(`Forgot WorkOS local environment ${environmentName.value}`);
@@ -87,9 +130,6 @@ const teardownWorktree = Effect.fn('teardownWorktree')(function* (
     .pipe(Effect.mapError(asTeardownError('delete', envFilePath)));
   yield* log('Deleted .env.local');
 
-  yield* log(
-    `Convex deployment ${Domain.convexReference(worktreeId)} was left in place; it expires on its own (created with --expiration "${ConvexCli.CONVEX_EXPIRATION}").`
-  );
   yield* log('Teardown complete. The linked worktree can now be removed.');
 });
 

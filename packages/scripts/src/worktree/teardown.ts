@@ -1,5 +1,6 @@
 #!/usr/bin/env tsx
 
+import * as NodeHttpClient from '@effect/platform-node/NodeHttpClient';
 import * as NodeRuntime from '@effect/platform-node/NodeRuntime';
 import * as NodeServices from '@effect/platform-node/NodeServices';
 import * as Console from 'effect/Console';
@@ -9,6 +10,7 @@ import * as Command from 'effect/unstable/cli/Command';
 import * as Flag from 'effect/unstable/cli/Flag';
 import * as Prompt from 'effect/unstable/cli/Prompt';
 
+import * as ConvexPlatform from './convexPlatform.ts';
 import * as EnvFile from './envFile.ts';
 import * as Lifecycle from './lifecycle/index.ts';
 import * as Lock from './lock.ts';
@@ -41,7 +43,7 @@ const teardown = Command.make(
     if (cannotPrompt) {
       return yield* new Lifecycle.TeardownError({
         message:
-          'Refusing to delete .env.local without confirmation. Re-run with --yes, or use --dry-run to inspect the plan.',
+          'Refusing to delete the Convex deployment and .env.local without confirmation. Re-run with --yes, or use --dry-run to inspect the plan.',
       });
     }
 
@@ -49,7 +51,7 @@ const teardown = Command.make(
       ? yield* Prompt.run(
           Prompt.Confirm({
             message:
-              "Delete .env.local? It holds the only copy of this worktree's WorkOS API key.",
+              "Delete this worktree's Convex deployment, with its data, and .env.local? The file holds the only copy of this worktree's WorkOS API key.",
           })
         ).pipe(Effect.catchTag('QuitError', () => Effect.succeed(false)))
       : true;
@@ -63,7 +65,7 @@ const teardown = Command.make(
   })
 ).pipe(
   Command.withDescription(
-    "Forget this linked worktree's WorkOS environment and delete its .env.local."
+    "Delete this linked worktree's Convex deployment, forget its WorkOS environment and delete its .env.local."
   ),
   Command.withExamples([
     {
@@ -118,7 +120,10 @@ const gc = Command.make(
 const liveLayer = Layer.mergeAll(
   EnvFile.EnvFile.layer,
   Lock.WorkosRegistryLock.layer,
-  WorkosCli.WorkosCli.layer
+  WorkosCli.WorkosCli.layer,
+  ConvexPlatform.ConvexPlatform.layer.pipe(
+    Layer.provide(NodeHttpClient.layerUndici)
+  )
 ).pipe(Layer.provideMerge(NodeServices.layer));
 
 const program = Command.runWith(Command.withSubcommands(teardown, [gc]), {

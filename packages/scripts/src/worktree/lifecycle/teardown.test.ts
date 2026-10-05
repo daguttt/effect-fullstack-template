@@ -4,6 +4,7 @@ import * as FileSystem from 'effect/FileSystem';
 import * as Layer from 'effect/Layer';
 import * as Ref from 'effect/Ref';
 
+import * as ConvexPlatform from '../convexPlatform.ts';
 import * as Lock from '../lock.ts';
 import * as TestProviders from '../testProviders.ts';
 import * as TestSpawner from '../testSpawner.ts';
@@ -33,6 +34,10 @@ layer(TestProviders.worktreeFixtureLayer)('teardownWorktree', (it) => {
             Effect.provideService(
               Lock.WorkosRegistryLock,
               TestProviders.unlockedRegistry
+            ),
+            Effect.provideService(
+              ConvexPlatform.ConvexPlatform,
+              TestProviders.fakeConvexPlatform()
             )
           );
 
@@ -63,6 +68,10 @@ layer(TestProviders.worktreeFixtureLayer)('teardownWorktree', (it) => {
             Effect.provideService(
               Lock.WorkosRegistryLock,
               TestProviders.unlockedRegistry
+            ),
+            Effect.provideService(
+              ConvexPlatform.ConvexPlatform,
+              TestProviders.fakeConvexPlatform()
             )
           );
           yield* run;
@@ -99,6 +108,10 @@ layer(TestProviders.worktreeFixtureLayer)('teardownWorktree', (it) => {
                 Lock.WorkosRegistryLock,
                 TestProviders.unlockedRegistry
               ),
+              Effect.provideService(
+                ConvexPlatform.ConvexPlatform,
+                TestProviders.fakeConvexPlatform()
+              ),
               Effect.provide(
                 WorkosCli.WorkosCli.layer.pipe(Layer.provide(spawnerLayer))
               )
@@ -107,6 +120,135 @@ layer(TestProviders.worktreeFixtureLayer)('teardownWorktree', (it) => {
             expect(yield* fileSystem.exists(worktree.envFilePath)).toBe(false);
           })
         )
+    );
+  });
+
+  describe('Convex deployment', () => {
+    /**
+     * Tears down a worktree that selected `selection`, against a Convex that
+     * reports `remote` for it, and returns the names it deleted.
+     */
+    const deletedBy = (options: {
+      readonly selection?: string;
+      readonly mainSelection?: string;
+      readonly remote?: Partial<ConvexPlatform.Deployment>;
+      readonly dryRun?: boolean;
+      readonly failDelete?: boolean;
+    }) =>
+      TestProviders.withWorktreeFixture((worktree, envFile) =>
+        Effect.gen(function* () {
+          const fileSystem = yield* FileSystem.FileSystem;
+          const deleted = yield* Ref.make<Array<string>>([]);
+          yield* envFile.upsert(worktree.envFilePath, [
+            ['CONVEX_DEPLOYMENT', options.selection ?? 'dev:calm-otter-1'],
+          ]);
+          if (options.mainSelection)
+            yield* envFile.upsert(worktree.mainEnvFilePath, [
+              ['CONVEX_DEPLOYMENT', options.mainSelection],
+            ]);
+
+          const result = yield* Teardown.teardownWorktree(worktree, {
+            dryRun: options.dryRun ?? false,
+          }).pipe(
+            Effect.provideService(
+              WorkosCli.WorkosCli,
+              TestProviders.fakeWorkosCli()
+            ),
+            Effect.provideService(
+              Lock.WorkosRegistryLock,
+              TestProviders.unlockedRegistry
+            ),
+            Effect.provideService(
+              ConvexPlatform.ConvexPlatform,
+              TestProviders.fakeConvexPlatform({
+                findDeployment: (name) =>
+                  Effect.succeedSome({
+                    name,
+                    reference: 'dev/worktree-test-worktree',
+                    deploymentType: 'dev',
+                    isDefault: false,
+                    ...options.remote,
+                  }),
+                deleteDeployment: (name) =>
+                  options.failDelete
+                    ? Effect.fail(
+                        new ConvexPlatform.ConvexPlatformError({
+                          message: 'platform unavailable',
+                        })
+                      )
+                    : Ref.update(deleted, (names) => [...names, name]),
+              })
+            ),
+            Effect.result
+          );
+
+          return {
+            result,
+            deleted: yield* Ref.get(deleted),
+            envFileExists: yield* fileSystem.exists(worktree.envFilePath),
+          };
+        })
+      );
+
+    it.effect('deletes the deployment that carries its reference', () =>
+      Effect.gen(function* () {
+        const run = yield* deletedBy({});
+        expect(run.deleted).toStrictEqual(['calm-otter-1']);
+        expect(run.envFileExists).toBe(false);
+      })
+    );
+
+    it.effect('deletes its deployment selected by bare name', () =>
+      Effect.gen(function* () {
+        const run = yield* deletedBy({ selection: 'calm-otter-1' });
+        expect(run.deleted).toStrictEqual(['calm-otter-1']);
+      })
+    );
+
+    it.effect('deletes nothing during dry-run', () =>
+      Effect.gen(function* () {
+        const run = yield* deletedBy({ dryRun: true });
+        expect(run.deleted).toStrictEqual([]);
+        expect(run.envFileExists).toBe(true);
+      })
+    );
+
+    for (const [why, options] of [
+      ['carries another reference', { remote: { reference: 'dev' } }],
+      ['was promoted to production', { remote: { deploymentType: 'prod' } }],
+      ['is the project default', { remote: { isDefault: true } }],
+      [
+        'is selected by the main checkout',
+        { mainSelection: 'dev:calm-otter-1' },
+      ],
+      [
+        'is selected by the main checkout by bare name',
+        { mainSelection: 'calm-otter-1' },
+      ],
+      [
+        'is selected by the main checkout under a doubled kind',
+        { mainSelection: 'dev:dev:calm-otter-1' },
+      ],
+      [
+        'is not selected by a plain name',
+        { selection: 'dev:calm-otter-1/delete' },
+      ],
+    ] as const)
+      it.effect(`leaves a deployment that ${why}`, () =>
+        Effect.gen(function* () {
+          const run = yield* deletedBy(options);
+          expect(run.result._tag).toBe('Success');
+          expect(run.deleted).toStrictEqual([]);
+          expect(run.envFileExists).toBe(false);
+        })
+      );
+
+    it.effect('keeps .env.local when the deployment is not deleted', () =>
+      Effect.gen(function* () {
+        const run = yield* deletedBy({ failDelete: true });
+        expect(run.result._tag).toBe('Failure');
+        expect(run.envFileExists).toBe(true);
+      })
     );
   });
 

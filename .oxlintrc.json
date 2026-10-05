@@ -37,36 +37,6 @@
     "typescript/no-import-type-side-effects": "error",
     "react/exhaustive-deps": "warn",
     "effecttsgo/async-function": "off",
-    "effect-standards/dto-verb-prefix": [
-      "error",
-      {
-        "verbs": [
-          "Create",
-          "Insert",
-          "Update",
-          "Upsert",
-          "Delete",
-          "Remove",
-          "Assign",
-          "Unassign",
-          "Ensure",
-          "Configure",
-          "Set",
-          "Add",
-          "Replace",
-          "Attach",
-          "Detach",
-          "Ban",
-          "Unban",
-          "Deactivate",
-          "Reactivate",
-          "Rename",
-          "Request",
-          "Start",
-          "Run"
-        ]
-      }
-    ],
     "typescript/no-unsafe-argument": "error",
     "typescript/no-unsafe-assignment": "error",
     "typescript/no-unsafe-call": "error",

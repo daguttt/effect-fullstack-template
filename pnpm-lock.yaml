@@ -309,8 +309,8 @@ importers:
         specifier: 'catalog:'
         version: 1.82.0(oxlint-tsgolint@7.0.2001)
       oxlint-plugin-effect-standards:
-        specifier: github:daguttt/oxlint-plugin-effect-standards#v0.1.0
-        version: https://codeload.github.com/daguttt/oxlint-plugin-effect-standards/tar.gz/1041729636b08c9ba8b6ba60e36ed439b8755118(tailwindcss@4.3.3)
+        specifier: github:daguttt/oxlint-plugin-effect-standards#v0.1.1
+        version: https://codeload.github.com/daguttt/oxlint-plugin-effect-standards/tar.gz/9910188780670f2c431f6b443d0c1e6b7be530fb(tailwindcss@4.3.3)
       oxlint-tsgolint:
         specifier: 7.0.2001
         version: 7.0.2001
@@ -4091,9 +4091,9 @@ packages:
     resolution: {integrity: sha512-weP+BZ8MVNnlCm8c0Qdc1WSWq4Qn7I+9CJGm7Qali6g44e/PUzbjNqJX5NJ9ljlNMosfJvg1fKEGILklK9cwnw==}
     engines: {node: '>=18'}
 
-  oxlint-plugin-effect-standards@https://codeload.github.com/daguttt/oxlint-plugin-effect-standards/tar.gz/1041729636b08c9ba8b6ba60e36ed439b8755118:
-    resolution: {gitHosted: true, integrity: sha512-+M9PsG3dFdgTmSQ/UJvuUkTSVRE1xMtXVfvsCmBKcN9nTlIZNq6wcpUJabUpWdTXP4nWSeRsZJUY8snC01X3Wg==, tarball: https://codeload.github.com/daguttt/oxlint-plugin-effect-standards/tar.gz/1041729636b08c9ba8b6ba60e36ed439b8755118}
-    version: 0.1.0
+  oxlint-plugin-effect-standards@https://codeload.github.com/daguttt/oxlint-plugin-effect-standards/tar.gz/9910188780670f2c431f6b443d0c1e6b7be530fb:
+    resolution: {gitHosted: true, integrity: sha512-hoBaZn0jcVZf3Lw0HmZD7HB/uldW7iKMsEEOyoGtOg/oVeAuXYWmQjEJmZirH0aPch93y0GBgA95PosgZeep1g==, tarball: https://codeload.github.com/daguttt/oxlint-plugin-effect-standards/tar.gz/9910188780670f2c431f6b443d0c1e6b7be530fb}
+    version: 0.1.1
     engines: {node: '>=24.15.0'}
     peerDependencies:
       tailwindcss: '>=4.1.0'
@@ -8302,7 +8302,7 @@ snapshots:
       string-width: 7.2.0
       strip-ansi: 7.2.0
 
-  oxlint-plugin-effect-standards@https://codeload.github.com/daguttt/oxlint-plugin-effect-standards/tar.gz/1041729636b08c9ba8b6ba60e36ed439b8755118(tailwindcss@4.3.3):
+  oxlint-plugin-effect-standards@https://codeload.github.com/daguttt/oxlint-plugin-effect-standards/tar.gz/9910188780670f2c431f6b443d0c1e6b7be530fb(tailwindcss@4.3.3):
     dependencies:
       '@oxlint/plugins': 1.82.0
       effect: 4.0.0-rc.117

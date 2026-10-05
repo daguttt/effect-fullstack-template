@@ -1,4 +1,5 @@
 import * as Predicate from 'effect/Predicate';
+import * as Result from 'effect/Result';
 
 const POST_LOGIN_RETURN_TO_KEY = 'postLoginReturnTo';
 
@@ -13,12 +14,11 @@ export function consumePostLoginReturnTo(): string | null {
 }
 
 export function checkSafeReturnTo(returnTo: string | null): boolean {
-  if (
-    typeof returnTo !== 'string' ||
-    !returnTo.startsWith('/') ||
-    returnTo.startsWith('//')
-  )
-    return false;
+  const isSameOriginPath =
+    typeof returnTo === 'string' &&
+    returnTo.startsWith('/') &&
+    !returnTo.startsWith('//');
+  if (!isSameOriginPath) return false;
 
   const pathname = getReturnToPathname(returnTo);
   if (Predicate.isNull(pathname)) return false;
@@ -31,11 +31,9 @@ function getPostLoginReturnTo(): string | null {
 }
 
 function getReturnToPathname(returnTo: string): string | null {
-  try {
-    return new URL(returnTo, 'http://app.local').pathname;
-  } catch {
-    return null;
-  }
+  return Result.getOrNull(
+    Result.try(() => new URL(returnTo, 'http://app.local').pathname)
+  );
 }
 
 function checkIsAuthRoutePathname(pathname: string): boolean {

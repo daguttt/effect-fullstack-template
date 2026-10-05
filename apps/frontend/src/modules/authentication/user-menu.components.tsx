@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   cn,
+  tw,
 } from '@repo/ui';
 
 import type { AuthUser } from './user.models';
@@ -90,7 +91,7 @@ export function UserSessionMenu({
           <UserSessionInfo
             user={user}
             className="flex-1"
-            textClassName="group-data-[collapsible=icon]:hidden"
+            textClassName={tw`group-data-[collapsible=icon]:hidden`}
           />
           <span className="ml-auto group-data-[collapsible=icon]:hidden">
             {isOpen ? <ChevronRight /> : <ChevronDown />}

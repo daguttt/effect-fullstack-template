@@ -81,7 +81,10 @@ const unquoteValue = (value: string) => {
   const trimmed = value.trim();
   const quote = trimmed[0];
 
-  if ((quote !== '"' && quote !== "'") || trimmed.at(-1) !== quote) {
+  const lacksMatchingQuotes =
+    (quote !== '"' && quote !== "'") || trimmed.at(-1) !== quote;
+
+  if (lacksMatchingQuotes) {
     return trimmed;
   }
 
@@ -105,11 +108,17 @@ const stripInlineComment = (value: string) => {
     const character = value[index];
     const previous = value[index - 1];
 
-    if ((character === '"' || character === "'") && previous !== '\\') {
+    const isUnescapedQuote =
+      (character === '"' || character === "'") && previous !== '\\';
+
+    if (isUnescapedQuote) {
       quote = quote === character ? undefined : (quote ?? character);
     }
 
-    if (character === '#' && !quote && /\s/.test(previous ?? '')) {
+    const startsInlineComment =
+      character === '#' && !quote && /\s/.test(previous ?? '');
+
+    if (startsInlineComment) {
       return value.slice(0, index);
     }
   }
@@ -142,7 +151,9 @@ const parseEnvFile = Effect.fn('parseEnvFile')(function* (
   for (const [lineIndex, line] of contents.split(/\r?\n/).entries()) {
     const trimmed = line.trim();
 
-    if (!trimmed || trimmed.startsWith('#')) {
+    const isBlankOrComment = !trimmed || trimmed.startsWith('#');
+
+    if (isBlankOrComment) {
       continue;
     }
 
@@ -174,7 +185,9 @@ const parseEnvFile = Effect.fn('parseEnvFile')(function* (
 
     const value = unquoteValue(stripInlineComment(rawValue));
 
-    if (options.skipEmpty && value === '') {
+    const isSkippedEmptyValue = options.skipEmpty && value === '';
+
+    if (isSkippedEmptyValue) {
       continue;
     }
 

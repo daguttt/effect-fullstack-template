@@ -12,7 +12,7 @@ import * as Workflows from './modules/workflows';
 
 export const exampleWorkflow = Workflows.workflowManager
   .define({
-    args: ExampleWorkflows.ExampleWorkflowDto,
+    args: ExampleWorkflows.RunExampleWorkflowDto,
     returns: v.string(),
   })
   .handler(async (step, args): Promise<string> => {

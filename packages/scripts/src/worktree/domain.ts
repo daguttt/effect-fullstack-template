@@ -103,7 +103,9 @@ const parsePort = (value: string): Result.Result<Port, WorktreeDomainError> => {
 
   const port = Number(trimmed);
 
-  if (port < MIN_PORT || port > MAX_PORT) {
+  const isOutOfRange = port < MIN_PORT || port > MAX_PORT;
+
+  if (isOutOfRange) {
     return Result.fail(
       new WorktreeDomainError({
         message: `Port must be an integer between ${MIN_PORT} and ${MAX_PORT}: ${value}`,

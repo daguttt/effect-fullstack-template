@@ -40,11 +40,12 @@ const unquote = (rawValue: string) => {
   const trimmed = rawValue.trim();
   const quote = trimmed[0];
 
-  if (
+  const lacksMatchingQuotes =
     (quote !== '"' && quote !== "'") ||
     trimmed.length < 2 ||
-    trimmed.at(-1) !== quote
-  ) {
+    trimmed.at(-1) !== quote;
+
+  if (lacksMatchingQuotes) {
     return trimmed;
   }
 
@@ -63,7 +64,9 @@ const parseEnvFileContents = (contents: string) => {
   for (const line of contents.split(/\r?\n/)) {
     const trimmed = line.trim();
 
-    if (trimmed === '' || trimmed.startsWith('#')) {
+    const isBlankOrComment = trimmed === '' || trimmed.startsWith('#');
+
+    if (isBlankOrComment) {
       continue;
     }
 

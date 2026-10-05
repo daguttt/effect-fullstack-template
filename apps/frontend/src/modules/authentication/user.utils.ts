@@ -2,7 +2,8 @@ export function getUserDisplayName(
   firstName: string | null,
   lastName: string | null
 ) {
-  if (firstName && lastName) {
+  const hasFullName = Boolean(firstName) && Boolean(lastName);
+  if (hasFullName) {
     return `${firstName} ${lastName}`;
   }
 

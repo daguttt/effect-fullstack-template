@@ -15,6 +15,7 @@ import * as Layer from 'effect/Layer';
 import * as Path from 'effect/Path';
 import type { PlatformError } from 'effect/PlatformError';
 import * as Random from 'effect/Random';
+import * as Result from 'effect/Result';
 import * as Schema from 'effect/Schema';
 
 export { LockError, WorkosRegistryLock };
@@ -29,15 +30,15 @@ const MAX_RETRY_DELAY_MS = 1000;
 
 const LOCK_FILE_MODE = 0o600;
 
-const isProcessAlive = (pid: number) => {
-  try {
+const isProcessAlive = (pid: number) =>
+  Result.match(
     // Signal 0 performs the permission and existence check without delivering.
-    process.kill(pid, 0);
-    return true;
-  } catch (cause) {
-    return (cause as NodeJS.ErrnoException).code === 'EPERM';
-  }
-};
+    Result.try(() => process.kill(pid, 0)),
+    {
+      onSuccess: () => true,
+      onFailure: (cause) => (cause as NodeJS.ErrnoException).code === 'EPERM',
+    }
+  );
 
 /** The `wx` flag fails with this reason when another holder won the race. */
 const isAlreadyExists = (error: PlatformError) =>
@@ -130,7 +131,9 @@ class WorkosRegistryLock extends Context.Service<
         // be reclaimed by a contender.
         const hasPublishedOwner = Number.isInteger(owner) && owner > 0;
 
-        if (!hasPublishedOwner || isProcessAlive(owner)) {
+        const mayStillBeHeld = !hasPublishedOwner || isProcessAlive(owner);
+
+        if (mayStillBeHeld) {
           return false;
         }
 

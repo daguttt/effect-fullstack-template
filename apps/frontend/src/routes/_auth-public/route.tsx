@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { Outlet, createFileRoute } from '@tanstack/react-router';
 import * as Effect from 'effect/Effect';
+import * as Predicate from 'effect/Predicate';
 import * as Schema from 'effect/Schema';
 
 import * as Authentication from '#modules/authentication';
@@ -22,11 +23,14 @@ export const Route = createFileRoute('/_auth-public')({
       })
     )(search);
 
+    const isSafeReturnTo =
+      Predicate.isNotUndefined(returnTo) &&
+      Authentication.checkSafeReturnTo(returnTo);
+
     return {
-      returnTo:
-        returnTo && Authentication.checkSafeReturnTo(returnTo)
-          ? returnTo
-          : Authentication.REDIRECT_AUTH_FALLBACK_PATH,
+      returnTo: isSafeReturnTo
+        ? returnTo
+        : Authentication.REDIRECT_AUTH_FALLBACK_PATH,
     };
   },
   beforeLoad: ({ search }) => ({

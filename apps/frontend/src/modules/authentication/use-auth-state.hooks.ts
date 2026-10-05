@@ -1,5 +1,6 @@
 import { useAuth } from '@workos-inc/authkit-react';
 import { useConvexAuth } from 'convex/react';
+import * as Predicate from 'effect/Predicate';
 
 export function useAuthState(): {
   isLoading: boolean;
@@ -10,7 +11,7 @@ export function useAuthState(): {
 
   const isLoading = convexAuth.isLoading || workosAuth.isLoading;
   const isAuthenticated =
-    convexAuth.isAuthenticated && workosAuth.user !== null;
+    convexAuth.isAuthenticated && Predicate.isNotNull(workosAuth.user);
 
   return { isLoading, isAuthenticated };
 }

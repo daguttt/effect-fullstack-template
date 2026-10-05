@@ -6,6 +6,7 @@
  * Nothing in this module performs I/O, so every rule here is directly testable
  * from `domain.test.ts`.
  */
+import * as Predicate from 'effect/Predicate';
 import * as Result from 'effect/Result';
 import * as Schema from 'effect/Schema';
 
@@ -180,7 +181,7 @@ const classifyWorkosProfiles = (
   for (const claim of claims) {
     const existing = owners.get(claim.environment);
 
-    if (existing === undefined) {
+    if (Predicate.isUndefined(existing)) {
       owners.set(claim.environment, [claim.worktree]);
       continue;
     }
@@ -195,7 +196,7 @@ const classifyWorkosProfiles = (
   for (const profile of profiles) {
     const worktrees = owners.get(profile);
 
-    if (worktrees === undefined) {
+    if (Predicate.isUndefined(worktrees)) {
       orphaned.push(profile);
       continue;
     }

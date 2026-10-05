@@ -1,3 +1,5 @@
+import * as Predicate from 'effect/Predicate';
+
 const POST_LOGIN_RETURN_TO_KEY = 'postLoginReturnTo';
 
 export function setPostLoginReturnTo(returnTo: string) {
@@ -19,7 +21,7 @@ export function checkSafeReturnTo(returnTo: string | null): boolean {
     return false;
 
   const pathname = getReturnToPathname(returnTo);
-  if (pathname === null) return false;
+  if (Predicate.isNull(pathname)) return false;
 
   return !checkIsAuthRoutePathname(pathname);
 }

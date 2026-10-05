@@ -1,6 +1,9 @@
 {
   "$schema": "./node_modules/@effect/tsgo/oxlint-schema.json",
-  "extends": ["./node_modules/@effect/tsgo/oxlint-presets/recommended.json"],
+  "extends": [
+    "./node_modules/@effect/tsgo/oxlint-presets/recommended.json",
+    "./node_modules/oxlint-plugin-effect-standards/configs/general.json"
+  ],
   "plugins": ["typescript", "react", "import"],
   "categories": {
     "correctness": "error"
@@ -46,6 +49,20 @@
       "rules": {
         "effecttsgo/node-builtin-import": "off",
         "effecttsgo/process-env": "off"
+      }
+    },
+    {
+      "files": ["packages/ui/**"],
+      "rules": {
+        "effect-standards/prefer-predicate-nullability": "off",
+        "effect-standards/tailwind-class-strings": "error"
+      }
+    },
+    {
+      "files": ["packages/ui/src/components/ui/**"],
+      "rules": {
+        "effect-standards/no-else": "off",
+        "effect-standards/no-inline-compound-condition": "off"
       }
     }
   ],

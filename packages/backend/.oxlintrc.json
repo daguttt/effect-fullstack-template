@@ -1,6 +1,9 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "extends": ["../../.oxlintrc.json"],
+  "extends": [
+    "../../.oxlintrc.json",
+    "../../node_modules/oxlint-plugin-effect-standards/configs/backend.json"
+  ],
   "jsPlugins": ["@convex-dev/eslint-plugin"],
   "rules": {
     "@convex-dev/import-wrong-runtime": "off",
@@ -10,5 +13,13 @@
     "@convex-dev/no-filter-in-query": "warn",
     "@convex-dev/no-schema-import-cycle": "error"
   },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/test.setup.ts", "**/*.fixtures.ts"],
+      "rules": {
+        "effect-standards/no-dynamic-import": "off"
+      }
+    }
+  ],
   "ignorePatterns": ["src/convex/_generated/**", "src/confect/_generated/**"]
 }

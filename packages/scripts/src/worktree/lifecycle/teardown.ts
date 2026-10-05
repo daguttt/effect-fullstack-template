@@ -125,10 +125,12 @@ const teardownWorktree = Effect.fn('teardownWorktree')(function* (
     yield* log(`Forgot WorkOS local environment ${environmentName.value}`);
   }
 
-  yield* fileSystem
-    .remove(envFilePath, { force: true })
-    .pipe(Effect.mapError(asTeardownError('delete', envFilePath)));
-  yield* log('Deleted .env.local');
+  if (envFileExists) {
+    yield* fileSystem
+      .remove(envFilePath, { force: true })
+      .pipe(Effect.mapError(asTeardownError('delete', envFilePath)));
+    yield* log('Deleted .env.local');
+  }
 
   yield* log('Teardown complete. The linked worktree can now be removed.');
 });

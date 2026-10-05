@@ -3,6 +3,7 @@ import * as Effect from 'effect/Effect';
 import * as FileSystem from 'effect/FileSystem';
 import * as Layer from 'effect/Layer';
 import * as Ref from 'effect/Ref';
+import * as TestConsole from 'effect/testing/TestConsole';
 
 import * as ConvexPlatform from '../convexPlatform.ts';
 import * as Lock from '../lock.ts';
@@ -79,7 +80,12 @@ layer(TestProviders.worktreeFixtureLayer)('teardownWorktree', (it) => {
 
           expect(yield* Ref.get(removed)).toStrictEqual(['unclaimed-existing']);
           expect(yield* fileSystem.exists(worktree.envFilePath)).toBe(false);
-        })
+          expect(
+            (yield* TestConsole.logLines).filter(
+              (line) => line === '[teardown-worktree] Deleted .env.local'
+            )
+          ).toHaveLength(1);
+        }).pipe(Effect.provide(Layer.fresh(TestConsole.layer)))
       )
     );
 

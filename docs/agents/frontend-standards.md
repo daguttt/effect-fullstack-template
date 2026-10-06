@@ -5,7 +5,7 @@
 - Frontend-owned types are reserved for presentation-only state that has no backend representation; every persisted entity and function payload type is inferred from the backend.
 - For Confect functions, infer arguments, decoded returns, and typed errors with `Ref.Args`, `Ref.Returns`, and `Ref.Error` from the generated `@repo/backend/refs` tree.
 - Infer persisted documents from generated document types such as `UsersDoc` from `@repo/backend/docs`, or with Convex's generated `Doc<'tableName'>` where the generated data model is available.
-- Infer an operation's document ID from that operation's function arguments; otherwise use the generated `Id<'tableName'>`.
+- Infer an operation's document ID from that operation's function arguments; otherwise use the generated `Id<'tableName'>` from `@repo/backend/id`, which also exports the `Id('tableName')` schema for decoding an ID that arrives as a string.
 
 ## Route-local features
 

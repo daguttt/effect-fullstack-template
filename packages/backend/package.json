@@ -16,7 +16,7 @@
   "exports": {
     "./refs": "./src/confect/_generated/refs.ts",
     "./docs": "./src/confect/_generated/docs.ts",
-    "./id": "./src/confect/_generated/id.ts",
+    "./id": "./src/confect/id.ts",
     "./shared/exampleWorkflows": "./src/confect/modules/exampleWorkflows/domain/models.ts"
   },
   "scripts": {

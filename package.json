@@ -51,7 +51,7 @@
     "@typescript/native": "catalog:",
     "convex": "catalog:",
     "oxlint": "catalog:",
-    "oxlint-plugin-effect-standards": "github:daguttt/oxlint-plugin-effect-standards#fa0e369925476c61ccc52a54673108531fa9507d",
+    "oxlint-plugin-effect-standards": "github:daguttt/oxlint-plugin-effect-standards#v0.3.0",
     "oxlint-tsgolint": "7.0.2003",
     "prettier": "3.9.9",
     "prettier-plugin-tailwindcss": "0.8.1",

@@ -1421,24 +1421,11 @@ packages:
       react: '>=19.0.0 <20.0.0'
       scheduler: '>=0.25.0 <0.29.0'
 
-  '@effect/platform-node-shared@4.0.1':
-    resolution: {integrity: sha512-VanaejudEhKJ4mpmqnEzdncVUhN6sGSO9ZDND54mRxAlZxj+4dYAWjDTYAy9o4tJo9aALeP2U8cVcOFzEdSeLg==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      effect: ^4.0.1
-
   '@effect/platform-node-shared@4.0.3':
     resolution: {integrity: sha512-5srkJfmWklWSgwZwlkMeTXobfNtxuwuTCvY9JWdPXRv/PBXAe5kKSptzRxT778oFFsaE9IMI8X61pvkifT9Eug==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       effect: ^4.0.3
-
-  '@effect/platform-node@4.0.1':
-    resolution: {integrity: sha512-FT0Fu5LO0/XP9zBpj0HqrtJNLluK4StNKqf6TSulUsjp8FPBsDVXGJiDuyoN5J2yVMT7tgvhxSwaDcObWVRIaQ==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      effect: ^4.0.1
-      redis: '>=5.0.0 <7.0.0'
 
   '@effect/platform-node@4.0.3':
     resolution: {integrity: sha512-ctvREpC1EzRVsOm0JyIzYHajAQScFaec6Gl+M7TEIpEqdmmx6Ju11Um92EA/CE2KBfY5Fp1QWlqTkK6lOL7tqg==}
@@ -2601,9 +2588,6 @@ packages:
 
   '@types/validate-npm-package-name@4.0.2':
     resolution: {integrity: sha512-lrpDziQipxCEeK5kWxvljWYhUvOiB2A9izZd9B2AFarYAkqZshb4lPbRs7zKEic6eGtH8V/2qJW+dPp9OtF6bw==}
-
-  '@types/ws@8.18.1':
-    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   '@types/ws@8.18.2':
     resolution: {integrity: sha512-67MQl+fpWKVTT1NYdnmo3U4sc/xPo/zQBncVnI74qmQa0z/b+1g6iYqNmGCPbxO+zz2aklb08a0oHfegiVd0/w==}
@@ -5908,7 +5892,7 @@ snapshots:
     dependencies:
       '@confect/core': 10.2.0(convex@1.46.0(react@19.3.0))(effect@4.0.3)
       '@confect/server': 10.2.0(@confect/core@10.2.0(convex@1.46.0(react@19.3.0))(effect@4.0.3))(@effect/platform-node@4.0.3(effect@4.0.3)(redis@6.2.1))(convex@1.46.0(react@19.3.0))(effect@4.0.3)
-      '@effect/platform-node': 4.0.1(effect@4.0.3)(redis@6.2.1)
+      '@effect/platform-node': 4.0.3(effect@4.0.3)(redis@6.2.1)
       bundle-require: 5.1.0(esbuild@0.28.2)
       code-block-writer: 13.0.3
       effect: 4.0.3
@@ -6082,30 +6066,11 @@ snapshots:
       react: 19.3.0
       scheduler: 0.28.0
 
-  '@effect/platform-node-shared@4.0.1(effect@4.0.3)':
-    dependencies:
-      '@types/ws': 8.18.1
-      effect: 4.0.3
-      ws: 8.22.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   '@effect/platform-node-shared@4.0.3(effect@4.0.3)':
     dependencies:
       '@types/ws': 8.18.2
       effect: 4.0.3
       ws: 8.22.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@effect/platform-node@4.0.1(effect@4.0.3)(redis@6.2.1)':
-    dependencies:
-      '@effect/platform-node-shared': 4.0.1(effect@4.0.3)
-      effect: 4.0.3
-      redis: 6.2.1
-      undici: 8.11.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -6962,10 +6927,6 @@ snapshots:
       csstype: 3.2.3
 
   '@types/validate-npm-package-name@4.0.2': {}
-
-  '@types/ws@8.18.1':
-    dependencies:
-      '@types/node': 26.6.2
 
   '@types/ws@8.18.2':
     dependencies:

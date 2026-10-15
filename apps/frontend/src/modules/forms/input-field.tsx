@@ -70,11 +70,11 @@ export function InputField({
         value={field.state.value}
         onBlur={field.handleBlur}
         onChange={(event) => {
-          const nextValue = hasNumberValue
-            ? event.target.valueAsNumber
-            : numeric
-              ? event.target.value.replace(/\D/g, '')
-              : event.target.value;
+          const nextValue = (() => {
+            if (hasNumberValue) return event.target.valueAsNumber;
+            if (numeric) return event.target.value.replace(/\D/g, '');
+            return event.target.value;
+          })();
 
           field.handleChange(nextValue);
         }}

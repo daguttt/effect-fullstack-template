@@ -63,9 +63,9 @@ type RunOptions = {
 };
 
 type InvocationRedactor = {
-  readonly redactArgs: (args: ReadonlyArray<string>) => ReadonlyArray<string>;
+  readonly redactArgs: (args: ReadonlyArray<CliValue>) => ReadonlyArray<string>;
   readonly redactEnvironment: (
-    environment: Record<string, string | undefined>
+    environment: Record<string, CliValue | undefined>
   ) => Record<string, string | undefined>;
   readonly redactText: (text: string) => string;
 };
@@ -86,9 +86,11 @@ const makeInvocationRedactor = (
 
   return {
     redactArgs: (args) =>
-      args.map((argument, index) =>
-        redactedArgumentIndices.has(index) ? '[redacted]' : redactText(argument)
-      ),
+      args.map((argument, index) => {
+        const isSensitive =
+          Redacted.isRedacted(argument) || redactedArgumentIndices.has(index);
+        return isSensitive ? '[redacted]' : redactText(argument);
+      }),
     redactEnvironment: (environment) =>
       Object.fromEntries(
         Object.entries(environment).map(([key, value]) => {
@@ -96,9 +98,9 @@ const makeInvocationRedactor = (
             return [key, undefined];
           }
 
-          const recordedValue = redactedEnvironmentKeys.has(key)
-            ? '[redacted]'
-            : redactText(value);
+          const isSensitive =
+            Redacted.isRedacted(value) || redactedEnvironmentKeys.has(key);
+          const recordedValue = isSensitive ? '[redacted]' : redactText(value);
           return [key, recordedValue];
         })
       ),

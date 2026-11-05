@@ -66,6 +66,7 @@ If a rule here fights the task in front of you, say so loudly and get a human si
 
 - **Durable work**: long-running or multi-step backend work uses `@convex-dev/workflow` through the `workflows` module. Copy the shape of `exampleWorkflows` (backend group, module, table, and the `/app` panel); [ADR 0005](docs/adr/0005-run-durable-work-as-confect-workflows-terminalized-on-complete.md) explains it. Delete the example once a real feature replaces it.
 - **Generated code is committed**: `packages/backend/src/confect/_generated`, `packages/backend/src/convex/_generated`, the one-line re-exports in `packages/backend/src/convex/*.ts`, and `apps/frontend/src/routeTree.gen.ts`. `pnpm dev` keeps them current. After changing a `*.spec.ts` or a table without the dev server, run `pnpm confect:codegen`.
+- Restart running `confect dev` after TypeScript configuration, package metadata, or dependency changes, including watchers started by `dev:agent` and backend dev scripts.
 - **Auth routes**: `/signin`, `/signup`, `/callback`, `/signout`, and `/signout-callback` are fixed; WorkOS is configured with the last two by `pnpm setup:worktree` and the PR-preview workflow. Pages that require a session go under `src/routes/_authenticated/`.
 
 <!-- convex-ai-start -->

@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "engines": {
-    "node": ">=24.15.0 <25"
+    "node": ">=24.22.2 <25"
   },
   "type": "module",
   "imports": {
@@ -36,7 +36,7 @@
     "@t3-oss/env-core": "catalog:",
     "@tailwindcss/vite": "catalog:frontend",
     "@tanstack/react-form": "1.33.5",
-    "@tanstack/react-router": "1.170.42",
+    "@tanstack/react-router": "1.170.46",
     "@tanstack/react-router-devtools": "1.167.2",
     "@uidotdev/usehooks": "2.4.1",
     "@workos-inc/authkit-js": "0.20.4",
@@ -52,10 +52,10 @@
   },
   "devDependencies": {
     "@babel/core": "7.29.6",
-    "@convex-dev/workflow": "0.4.8",
+    "@convex-dev/workflow": "0.4.10",
     "@locator/babel-jsx": "0.5.1",
     "@rolldown/plugin-babel": "0.2.3",
-    "@tanstack/router-plugin": "1.168.43",
+    "@tanstack/router-plugin": "1.168.48",
     "@testing-library/react": "catalog:frontend",
     "@types/babel__core": "7.20.5",
     "@types/node": "catalog:",

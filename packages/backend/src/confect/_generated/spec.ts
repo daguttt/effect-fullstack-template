@@ -9,6 +9,11 @@ const spec: Spec.Spec<{
   readonly exampleWorkflows: GroupSpec.NamedAt<typeof exampleWorkflows, "exampleWorkflows">;
   readonly users: GroupSpec.NamedAt<typeof users, "users">;
   readonly workosAuth: GroupSpec.NamedAt<typeof workosAuth, "workosAuth">;
-}> = Spec.make().addAt("developmentSeeder", developmentSeeder).addAt("exampleWorkflows", exampleWorkflows).addAt("users", users).addAt("workosAuth", workosAuth);
+}> = Spec.fromGroups({
+  ["developmentSeeder"]: developmentSeeder,
+  ["exampleWorkflows"]: exampleWorkflows,
+  ["users"]: users,
+  ["workosAuth"]: workosAuth,
+}) as typeof spec;
 
 export default spec;

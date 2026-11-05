@@ -22,7 +22,7 @@ jobs:
       - uses: pnpm/action-setup@d9184bf108216479bc5a137cc391f4d7b14c870b # v6.1.0
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: '24.21.0'
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check:all

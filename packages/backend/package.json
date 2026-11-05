@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "engines": {
-    "node": ">=24.15.0 <25"
+    "node": ">=24.22.2 <25"
   },
   "type": "module",
   "imports": {
@@ -36,7 +36,7 @@
     "@confect/cli": "catalog:",
     "@confect/core": "catalog:",
     "@confect/server": "catalog:",
-    "@convex-dev/workflow": "0.4.8",
+    "@convex-dev/workflow": "0.4.10",
     "@convex-dev/workos-authkit": "0.2.10",
     "@effect/platform-node": "catalog:",
     "@workos-inc/node": "11.0.0",

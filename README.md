@@ -4,7 +4,7 @@ A pnpm + Turborepo monorepo for shipping a typed full-stack app quickly, laid ou
 
 | Layer    | Stack                                                                                           |
 | -------- | ----------------------------------------------------------------------------------------------- |
-| Backend  | Convex 1.46, Confect 10 (next), Effect 4 (rc), `@convex-dev/workflow`, `@convex-dev/workos-authkit` |
+| Backend  | Convex 1.50, Confect 10.6, Effect 4.1, `@convex-dev/workflow`, `@convex-dev/workos-authkit` |
 | Frontend | Vite 8, React 19 + React Compiler, TanStack Router + Form, `@confect/react`, `@effect/atom-react` |
 | Auth     | WorkOS AuthKit (hosted sign-in, webhook-synced users)                                          |
 | UI       | Tailwind CSS 4, shadcn (`base-vega` style on Base UI), Sonner, lucide                          |

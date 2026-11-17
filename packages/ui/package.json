@@ -40,12 +40,12 @@
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
-    "@babel/core": "7.29.6",
+    "@babel/core": "7.29.13",
     "@base-ui/react": "catalog:frontend",
     "@base-ui/utils": "catalog:frontend",
     "@fontsource-variable/nunito-sans": "catalog:frontend",
     "@fontsource-variable/roboto": "catalog:frontend",
-    "@rolldown/plugin-babel": "0.2.3",
+    "@rolldown/plugin-babel": "0.3.1",
     "@tailwindcss/vite": "catalog:frontend",
     "@testing-library/react": "catalog:frontend",
     "@types/babel__core": "7.20.5",

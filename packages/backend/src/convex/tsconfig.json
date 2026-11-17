@@ -20,7 +20,15 @@
         "name": "@effect/language-service",
         "ignoreEffectSuggestionsInTscExitCode": true,
         "ignoreEffectWarningsInTscExitCode": false,
-        "ignoreEffectErrorsInTscExitCode": false
+        "ignoreEffectErrorsInTscExitCode": false,
+        "overrides": [
+          {
+            "include": ["../confect/http.ts"],
+            "options": {
+              "allowedUnstableApis": ["@confect/server/HttpRouter#make"]
+            }
+          }
+        ]
       }
     ],
 

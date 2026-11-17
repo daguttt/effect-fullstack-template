@@ -4,9 +4,9 @@
   "private": true,
   "engines": {
     "node": ">=24.22.2 <25",
-    "pnpm": ">=12.11.2 <13"
+    "pnpm": ">=12.21.0 <13"
   },
-  "packageManager": "pnpm@12.11.2",
+  "packageManager": "pnpm@12.21.0",
   "oxlint-plugin-effect-standards": {
     "tailwindStylesheet": "./apps/frontend/src/index.css"
   },
@@ -14,7 +14,7 @@
     "confect:codegen": "WORKOS_CLIENT_ID=client_id WORKOS_API_KEY=api_key WORKOS_WEBHOOK_SECRET=webhook confect codegen",
     "confect:dev": "WORKOS_CLIENT_ID=client_id WORKOS_API_KEY=api_key WORKOS_WEBHOOK_SECRET=webhook confect dev",
     "prepare": "effect-tsgo patch --typescript --oxlint",
-    "feedback": "pnpm format:check; pnpm lint; pnpm typecheck:all",
+    "feedback": "pnpm format:check && pnpm lint && pnpm typecheck:all",
     "dev": "turbo run dev --filter=@repo/frontend... --filter=@repo/backend... --ui tui",
     "dev:agent": "turbo run dev --filter=@repo/frontend... --filter=@repo/backend... --ui stream",
     "dev:backend": "turbo run dev --filter=@repo/backend... --ui tui",
@@ -53,10 +53,10 @@
     "convex": "catalog:",
     "oxlint": "catalog:",
     "oxlint-plugin-effect-standards": "github:daguttt/oxlint-plugin-effect-standards#v0.4.0",
-    "oxlint-tsgolint": "7.0.2005",
-    "prettier": "3.9.9",
+    "oxlint-tsgolint": "7.0.2007",
+    "prettier": "3.10.1",
     "prettier-plugin-tailwindcss": "0.8.1",
-    "turbo": "2.11.7",
+    "turbo": "2.11.11",
     "typescript": "catalog:"
   }
 }

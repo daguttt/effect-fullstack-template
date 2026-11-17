@@ -28,4 +28,9 @@ jobs:
       - run: pnpm format:check:all
       - run: pnpm lint
       - run: pnpm typecheck:all
+      - run: pnpm exec tsc --noEmit -p packages/backend/src/convex/tsconfig.json
       - run: pnpm test:run:all
+      - run: pnpm build
+        env:
+          VITE_CONVEX_URI: https://example.convex.cloud
+          VITE_WORKOS_CLIENT_ID: client_template_ci

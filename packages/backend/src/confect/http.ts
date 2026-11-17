@@ -1,4 +1,4 @@
-import { HttpRouter as ConfectHttpRouter } from '@confect/server';
+import * as ConfectHttpRouter from '@confect/server/HttpRouter';
 import * as Layer from 'effect/Layer';
 
 import { authKit } from './workosAuth';

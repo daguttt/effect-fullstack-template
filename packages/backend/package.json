@@ -45,15 +45,15 @@
   },
   "devDependencies": {
     "@confect/test": "catalog:",
-    "@convex-dev/eslint-plugin": "5.0.0",
+    "@convex-dev/eslint-plugin": "5.0.1",
     "@edge-runtime/vm": "5.0.0",
     "@effect/vitest": "catalog:",
     "@types/node": "catalog:",
     "@typescript/native": "catalog:",
-    "convex-test": "0.0.56",
+    "convex-test": "0.0.71",
     "oxlint": "catalog:",
     "typescript": "catalog:",
-    "vite": "8.3.4",
+    "vite": "8.3.8",
     "vitest": "catalog:"
   }
 }
